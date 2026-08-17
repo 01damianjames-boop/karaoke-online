@@ -867,9 +867,3 @@ function createSongList() {
 /* =========================
    START
 ========================= */
-
-createSongList();
-
-console.log(
-    "Karaoke Online loaded!"
-);
