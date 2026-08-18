@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Karaoke Online</title>
 
     <link rel="stylesheet" href="style.css">
@@ -10,92 +12,139 @@
 
 <body>
 
-    <div class="app">
+<div class="app">
 
-        <header>
-            <div class="logo">🎤 KARAOKE ONLINE</div>
-            <div class="connection">
-                🟢 Connected
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            🎤 KARAOKE ONLINE
+        </div>
+
+        <div class="connection">
+            🟢 Connected
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- MAIN KARAOKE SCREEN -->
+        <section class="screen">
+
+            <div class="song-info">
+
+                <div class="now-playing">
+                    NOW PLAYING
+                </div>
+
+                <h1 id="songTitle">
+                    No Song Selected
+                </h1>
+
+                <p id="artist">
+                    Choose a song from the remote
+                </p>
+
             </div>
-        </header>
 
-        <main>
 
-            <section class="screen">
+            <!-- YOUTUBE PLAYER -->
+            <div class="youtube-container">
 
-                <div class="song-info">
-                    <div class="now-playing">NOW PLAYING</div>
-                    <h1 id="songTitle">No Song Selected</h1>
-                    <p id="artist">Choose a song from the remote</p>
+                <div
+                    id="youtubePlayer"
+                    style="width:100%; height:100%;">
                 </div>
 
-                <div class="lyrics">
-                    <p class="line">🎵 Welcome to</p>
-                    <p class="main-line">KARAOKE ONLINE</p>
-                    <p class="line">Select a song to begin</p>
-                </div>
-
-                <div class="progress-area">
-                    <span id="currentTime">00:00</span>
-
-                    <div class="progress">
-                        <div id="progressBar"></div>
-                    </div>
-
-                    <span id="duration">00:00</span>
-                </div>
-
-                <div class="controls">
-                    <button onclick="previousSong()">⏮</button>
-
-                    <button class="play" onclick="togglePlay()">▶</button>
-
-                    <button onclick="nextSong()">⏭</button>
-                </div>
-
-                <!-- ACTUAL AUDIO PLAYER -->
-                <audio id="audioPlayer" preload="metadata">
-                    <source src="songs/test.mp3" type="audio/mpeg">
-                    Your browser does not support audio.
-                </audio>
-
-            </section>
+            </div>
 
 
-            <section class="remote">
+            <!-- CONTROLS -->
 
-                <div class="remote-header">
-                    <h2>📱 REMOTE</h2>
+            <div class="controls">
 
-                    <input
-                        type="text"
-                        id="search"
-                        placeholder="🔎 Search song..."
-                        oninput="searchSongs()"
-                    >
-                </div>
+                <button onclick="previousSong()">
+                    ⏮ Previous
+                </button>
 
-                <div id="songList" class="song-list"></div>
+                <button
+                    class="play"
+                    onclick="togglePlay()">
+                    ▶ Play / Pause
+                </button>
 
-                <div class="remote-buttons">
-                    <button onclick="previousSong()">⏮ Previous</button>
+                <button onclick="nextSong()">
+                    Next ⏭
+                </button>
 
-                    <button onclick="togglePlay()">▶ Play / Pause</button>
+            </div>
 
-                    <button onclick="nextSong()">Next ⏭</button>
-                </div>
+        </section>
 
-            </section>
 
-        </main>
+        <!-- REMOTE -->
+        <section class="remote">
 
-        <footer>
-            KARAOKE ONLINE • TV + PC + PHONE REMOTE
-        </footer>
+            <div class="remote-header">
 
-    </div>
+                <h2>
+                    📱 REMOTE
+                </h2>
 
-    <script src="./app.js"></script>
+            </div>
+
+
+            <input
+                id="search"
+                type="text"
+                placeholder="🔎 Search song..."
+                oninput="searchSongs()"
+            >
+
+
+            <div id="songList">
+
+                <!-- Songs will appear here -->
+
+            </div>
+
+
+            <div class="remote-buttons">
+
+                <button onclick="previousSong()">
+                    ⏮ Previous
+                </button>
+
+                <button onclick="togglePlay()">
+                    ▶ Play / Pause
+                </button>
+
+                <button onclick="nextSong()">
+                    Next ⏭
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        KARAOKE ONLINE • TV + PC + PHONE REMOTE
+    </footer>
+
+</div>
+
+
+<!-- YOUTUBE IFRAME API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<!-- YOUR APP -->
+<script src="./app.js"></script>
 
 </body>
+
 </html>

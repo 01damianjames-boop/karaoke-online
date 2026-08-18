@@ -1,384 +1,177 @@
 const songs = [
     {
-        title: "24hour",
-        artist: "Karaoke Online",
-        file: "songs/24 hour ago - CUESHE (KARAOKE).mp3",
-
-        lyrics: [
-            {
-                time: 17.20,
-                text: `YOUR LYRIC HERE`
-            },
-
-            {
-                time: 34.80,
-                text: `YOUR NEXT LYRIC HERE`
-            },
-
-            {
-                time: 53.90,
-                text: `YOUR NEXT LYRIC HERE`
-            }
-        ]
+        title: "24 Hours",
+        artist: "Cueshe - Karaoke",
+        youtube: "BiKU79XjelQ"
     },
 
     {
         title: "Stay",
-        artist: "Karaoke Online",
-        file: "songs/Stay - CUESHE (KARAOKE).mp3",
-
-        lyrics: [
-            {
-                time: 17.20,
-                text: `1ST`
-            },
-
-            {
-                time: 34.80,
-                text: `YOUR NEXT STAY LYRIC HERE`
-            },
-
-            {
-                time: 53.90,
-                text: `YOUR NEXT STAY LYRIC HERE`
-            }
-        ]
+        artist: "Karaoke",
+        youtube: "ymalJ5AMH4U"
     },
 
     {
         title: "Borrowed Time",
-        artist: "Karaoke Online",
-        file: "songs/Borrowed time - CUESHE (KARAOKE).mp3",
-
-        lyrics: [
-            {
-                time: 17.20,
-                text: `YOUR LYRIC HERE`
-            },
-
-            {
-                time: 34.80,
-                text: `YOUR NEXT LYRIC HERE`
-            },
-
-            {
-                time: 53.90,
-                text: `YOUR NEXT LYRIC HERE`
-            }
-        ]
+        artist: "Karaoke",
+        youtube: "feskSn7ZI6Y"
     }
 ];
 
+let currentSong = 0;
+
+// RESERVED SONGS
+let reservedSongs = [];
+
+// YouTube player
+let youtubePlayer = null;
+
+// Song waiting to be loaded when YouTube API is ready
+let pendingSongIndex = null;
 
 
 /* =========================
-   PLAYER VARIABLES
+   LOAD SONG
 ========================= */
 
-let currentSong = -1;
+function loadSong(index) {
 
-/*
-    RESERVED SONGS / QUEUE
-
-    Example:
-
-    24hour = playing
-
-    reserve Stay
-    reserve Borrowed Time
-
-    reservedQueue = [1, 2]
-*/
-let reservedQueue = [];
-
-let currentLyric = -1;
-
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const audio = document.getElementById("audioPlayer");
-
-const songTitle =
-    document.getElementById("songTitle");
-
-const artist =
-    document.getElementById("artist");
-
-const playButton =
-    document.querySelector(".controls .play");
-
-const currentTimeDisplay =
-    document.getElementById("currentTime");
-
-const durationDisplay =
-    document.getElementById("duration");
-
-const progressBar =
-    document.getElementById("progressBar");
-
-const searchInput =
-    document.getElementById("search");
-
-const songList =
-    document.getElementById("songList");
-
-const mainLine =
-    document.querySelector(".main-line");
-
-const lyricLines =
-    document.querySelectorAll(".lyrics .line");
-
-
-
-/* =========================
-   UPDATE LYRICS
-========================= */
-
-function updateLyrics() {
-
-    if (currentSong === -1) {
-        return;
+    if (index < 0) {
+        index = songs.length - 1;
     }
 
-    const lyrics =
-        songs[currentSong].lyrics;
-
-    if (!lyrics || lyrics.length === 0) {
-        return;
-    }
-
-    let newLyric = -1;
-
-    for (let i = 0; i < lyrics.length; i++) {
-
-        if (audio.currentTime >= lyrics[i].time) {
-
-            newLyric = i;
-
-        } else {
-
-            break;
-        }
-    }
-
-    if (newLyric === -1) {
-        return;
-    }
-
-    if (newLyric !== currentLyric) {
-
-        currentLyric = newLyric;
-
-
-        /* MAIN / CURRENT LYRIC */
-
-        if (mainLine) {
-
-            mainLine.textContent =
-                lyrics[currentLyric].text;
-        }
-
-
-        /* NEXT LYRIC */
-
-        if (lyricLines[0]) {
-
-            lyricLines[0].textContent =
-                lyrics[currentLyric + 1]?.text || "";
-        }
-
-
-        /* NEXT + 1 LYRIC */
-
-        if (lyricLines[1]) {
-
-            lyricLines[1].textContent =
-                lyrics[currentLyric + 2]?.text || "";
-        }
-    }
-}
-
-
-
-/* =========================
-   PLAY SONG
-========================= */
-
-function selectSong(index) {
-
-    if (!songs[index]) {
-        return;
+    if (index >= songs.length) {
+        index = 0;
     }
 
     currentSong = index;
 
-    const song = songs[index];
+    const song = songs[currentSong];
 
-    songTitle.textContent =
+    document.getElementById("songTitle").textContent =
         song.title;
 
-    artist.textContent =
+    document.getElementById("artist").textContent =
         song.artist;
 
+    renderSongs();
 
-    audio.pause();
-
-    audio.src =
-        song.file;
-
-    audio.load();
-
-
-    currentLyric = -1;
-
-
-    if (mainLine) {
-        mainLine.textContent = "";
+    // If YouTube player is not ready yet,
+    // remember the song and load it later.
+    if (!youtubePlayer) {
+        pendingSongIndex = index;
+        return;
     }
 
-    if (lyricLines[0]) {
-        lyricLines[0].textContent = "";
+    youtubePlayer.loadVideoById(song.youtube);
+}
+
+
+/* =========================
+   YOUTUBE PLAYER READY
+========================= */
+
+function onYouTubePlayerReady(event) {
+
+    // If there is a song waiting to be loaded,
+    // load that song.
+    if (pendingSongIndex !== null) {
+
+        const index = pendingSongIndex;
+
+        pendingSongIndex = null;
+
+        const song = songs[index];
+
+        event.target.loadVideoById(song.youtube);
+
+        return;
     }
 
-    if (lyricLines[1]) {
-        lyricLines[1].textContent = "";
+    // Start the first song.
+    const song = songs[currentSong];
+
+    event.target.loadVideoById(song.youtube);
+}
+
+
+/* =========================
+   YOUTUBE PLAYER STATE
+========================= */
+
+function onYouTubePlayerStateChange(event) {
+
+    // YouTube state 0 = ENDED
+    if (
+        event.data === YT.PlayerState.ENDED
+    ) {
+
+        // Small delay prevents accidental
+        // double-triggering.
+        setTimeout(function () {
+            nextSong();
+        }, 300);
     }
+}
 
 
-    /*
-        Update song list so the
-        reserved status changes.
-    */
+/* =========================
+   CREATE YOUTUBE PLAYER
+========================= */
 
-    createSongList();
+function createYouTubePlayer() {
 
+    youtubePlayer =
+        new YT.Player("youtubePlayer", {
 
-    audio.play()
-        .then(() => {
+            videoId: songs[currentSong].youtube,
 
-            playButton.textContent = "⏸";
+            playerVars: {
+                autoplay: 0,
+                rel: 0,
+                playsinline: 1
+            },
 
-        })
-        .catch(error => {
-
-            console.error(
-                "Play error:",
-                error
-            );
+            events: {
+                onReady: onYouTubePlayerReady,
+                onStateChange: onYouTubePlayerStateChange
+            }
 
         });
 }
 
 
-
 /* =========================
-   RESERVE SONG
+   NEXT
 ========================= */
 
-function reserveSong(index) {
+function nextSong() {
 
-    if (!songs[index]) {
-        return;
-    }
+    // RESERVED SONGS FIRST
+    if (reservedSongs.length > 0) {
 
+        const nextIndex =
+            reservedSongs.shift();
 
-    /*
-        If there is NO current song,
-        play immediately.
-    */
-
-    if (currentSong === -1) {
-
-        selectSong(index);
+        loadSong(nextIndex);
 
         return;
     }
 
-
-    /*
-        Don't reserve the song that
-        is currently playing.
-    */
-
-    if (index === currentSong) {
-
-        console.log(
-            "This song is already playing."
-        );
-
-        return;
-    }
-
-
-    /*
-        Don't add the same song twice.
-    */
-
-    if (reservedQueue.includes(index)) {
-
-        console.log(
-            "Song is already reserved."
-        );
-
-        return;
-    }
-
-
-    /*
-        Add song to queue.
-    */
-
-    reservedQueue.push(index);
-
-
-    console.log(
-        "Reserved:",
-        songs[index].title
-    );
-
-
-    /*
-        Refresh list so it shows
-        RESERVED.
-    */
-
-    createSongList();
+    // NO RESERVED SONGS
+    // Continue normally.
+    loadSong(currentSong + 1);
 }
 
 
-
 /* =========================
-   CANCEL RESERVATION
+   PREVIOUS
 ========================= */
 
-function cancelReservation(index) {
+function previousSong() {
 
-    const queuePosition =
-        reservedQueue.indexOf(index);
-
-    if (queuePosition === -1) {
-        return;
-    }
-
-
-    reservedQueue.splice(
-        queuePosition,
-        1
-    );
-
-
-    console.log(
-        "Reservation cancelled:",
-        songs[index].title
-    );
-
-
-    createSongList();
+    loadSong(currentSong - 1);
 }
-
 
 
 /* =========================
@@ -387,483 +180,202 @@ function cancelReservation(index) {
 
 function togglePlay() {
 
-    if (currentSong === -1) {
-
-        selectSong(0);
-
+    if (!youtubePlayer) {
         return;
     }
 
+    const state =
+        youtubePlayer.getPlayerState();
 
-    if (audio.paused) {
+    if (
+        state === YT.PlayerState.PLAYING
+    ) {
 
-        audio.play()
-            .then(() => {
-
-                playButton.textContent =
-                    "⏸";
-
-            })
-            .catch(error => {
-
-                console.error(
-                    "Play error:",
-                    error
-                );
-
-            });
+        youtubePlayer.pauseVideo();
 
     } else {
 
-        audio.pause();
-
-        playButton.textContent =
-            "▶";
+        youtubePlayer.playVideo();
     }
 }
 
 
-
 /* =========================
-   NEXT SONG
+   RESERVE SONG
 ========================= */
 
-function nextSong() {
+function reserveSong(index) {
 
-    /*
-        FIRST:
-        Check reserved songs.
-    */
+    // Don't allow the currently playing
+    // song to be reserved again.
+    if (index === currentSong) {
+        return;
+    }
 
-    if (reservedQueue.length > 0) {
+    // Don't reserve the same song twice.
+    if (reservedSongs.includes(index)) {
+        return;
+    }
 
-        const nextIndex =
-            reservedQueue.shift();
+    // ADD TO RESERVE QUEUE
+    reservedSongs.push(index);
+
+    renderSongs();
+}
 
 
-        console.log(
-            "Playing reserved song:",
-            songs[nextIndex].title
+/* =========================
+   REMOVE RESERVE
+========================= */
+
+function removeReserve(index) {
+
+    reservedSongs =
+        reservedSongs.filter(
+            songIndex => songIndex !== index
         );
 
-
-        selectSong(nextIndex);
-
-        return;
-    }
-
-
-    /*
-        If there is no reservation,
-        go normally to next song.
-    */
-
-    if (songs.length === 0) {
-        return;
-    }
-
-
-    let nextIndex =
-        currentSong + 1;
-
-
-    if (nextIndex >= songs.length) {
-
-        nextIndex = 0;
-    }
-
-
-    selectSong(nextIndex);
+    renderSongs();
 }
 
 
-
 /* =========================
-   PREVIOUS SONG
-========================= */
-
-function previousSong() {
-
-    if (songs.length === 0) {
-        return;
-    }
-
-
-    let previousIndex =
-        currentSong - 1;
-
-
-    if (previousIndex < 0) {
-
-        previousIndex =
-            songs.length - 1;
-    }
-
-
-    selectSong(previousIndex);
-}
-
-
-
-/* =========================
-   SEARCH
+   SEARCH SONGS
 ========================= */
 
 function searchSongs() {
 
-    const searchText =
-        searchInput.value.toLowerCase();
+    const search =
+        document
+            .getElementById("search")
+            .value
+            .toLowerCase();
+
+    renderSongs(search);
+}
 
 
-    const buttons =
-        songList.querySelectorAll(".song");
+/* =========================
+   RENDER SONG LIST
+========================= */
+
+function renderSongs(search = "") {
+
+    const list =
+        document.getElementById("songList");
+
+    list.innerHTML = "";
+
+    songs.forEach((song, index) => {
+
+        if (
+            !song.title
+                .toLowerCase()
+                .includes(search) &&
+            !song.artist
+                .toLowerCase()
+                .includes(search)
+        ) {
+            return;
+        }
+
+        const button =
+            document.createElement("button");
+
+        button.className = "song";
 
 
-    buttons.forEach(button => {
+        /* =====================
+           CURRENT SONG
+        ===================== */
 
-        const text =
-            button.textContent.toLowerCase();
+        if (index === currentSong) {
+
+            button.style.border =
+                "2px solid #00ff55";
+
+            button.style.boxShadow =
+                "0 0 10px rgba(0,255,80,0.25)";
+
+            button.innerHTML = `
+                🎤 ${song.title}
+                <span>
+                    ▶ NOW PLAYING
+                </span>
+            `;
+
+            button.onclick = function () {
+                loadSong(index);
+            };
+        }
 
 
-        button.style.display =
-            text.includes(searchText)
-                ? "block"
-                : "none";
+        /* =====================
+           RESERVED SONG
+        ===================== */
 
+        else if (
+            reservedSongs.includes(index)
+        ) {
+
+            const reserveNumber =
+                reservedSongs.indexOf(index) + 1;
+
+            button.style.border =
+                "2px solid #ffcc00";
+
+            button.style.boxShadow =
+                "0 0 10px rgba(255,204,0,0.20)";
+
+            button.innerHTML = `
+                🎵 ${song.title}
+                <span style="color:#ffcc00;">
+                    📌 RESERVED #${reserveNumber}
+                </span>
+            `;
+
+            button.onclick = function () {
+                removeReserve(index);
+            };
+        }
+
+
+        /* =====================
+           NORMAL SONG
+        ===================== */
+
+        else {
+
+            button.innerHTML = `
+                🎵 ${song.title}
+                <span>
+                    ${song.artist}
+                </span>
+            `;
+
+            button.onclick = function () {
+                reserveSong(index);
+            };
+        }
+
+        list.appendChild(button);
     });
 }
 
 
-
 /* =========================
-   AUDIO TIME
+   YOUTUBE API CALLBACK
 ========================= */
 
-audio.addEventListener(
-    "timeupdate",
+window.onYouTubeIframeAPIReady =
     function () {
 
-        currentTimeDisplay.textContent =
-            formatTime(
-                audio.currentTime
-            );
-
-
-        if (
-            audio.duration &&
-            !isNaN(audio.duration)
-        ) {
-
-            const percentage =
-                (
-                    audio.currentTime /
-                    audio.duration
-                ) * 100;
-
-
-            progressBar.style.width =
-                percentage + "%";
-        }
-
-
-        updateLyrics();
-
-    }
-);
-
-
-
-/* =========================
-   CLICK PROGRESS BAR
-========================= */
-
-const progress =
-    document.querySelector(".progress");
-
-
-if (progress) {
-
-    progress.addEventListener(
-        "click",
-        function (event) {
-
-            if (
-                !audio.duration ||
-                isNaN(audio.duration)
-            ) {
-
-                return;
-            }
-
-
-            const rect =
-                progress.getBoundingClientRect();
-
-
-            const clickPosition =
-                event.clientX -
-                rect.left;
-
-
-            const percentage =
-                clickPosition /
-                rect.width;
-
-
-            audio.currentTime =
-                percentage *
-                audio.duration;
-
-        }
-    );
-}
-
-
-
-/* =========================
-   AUDIO DURATION
-========================= */
-
-audio.addEventListener(
-    "loadedmetadata",
-    function () {
-
-        durationDisplay.textContent =
-            formatTime(
-                audio.duration
-            );
-
-    }
-);
-
-
-
-/* =========================
-   AUDIO END
-========================= */
-
-audio.addEventListener(
-    "ended",
-    function () {
-
-        playButton.textContent =
-            "▶";
-
-
-        /*
-            AUTOMATICALLY PLAY
-            RESERVED SONG FIRST.
-        */
-
-        if (reservedQueue.length > 0) {
-
-            const nextIndex =
-                reservedQueue.shift();
-
-
-            console.log(
-                "Auto-playing reserved:",
-                songs[nextIndex].title
-            );
-
-
-            selectSong(nextIndex);
-
-            return;
-        }
-
-
-        /*
-            If nothing is reserved,
-            automatically continue
-            to the next song.
-        */
-
-        if (songs.length > 0) {
-
-            let nextIndex =
-                currentSong + 1;
-
-
-            if (
-                nextIndex >=
-                songs.length
-            ) {
-
-                nextIndex = 0;
-            }
-
-
-            selectSong(nextIndex);
-        }
-
-    }
-);
-
-
-
-/* =========================
-   FORMAT TIME
-========================= */
-
-function formatTime(seconds) {
-
-    if (
-        !seconds ||
-        isNaN(seconds) ||
-        !isFinite(seconds)
-    ) {
-
-        return "00:00";
-    }
-
-
-    const minutes =
-        Math.floor(
-            seconds / 60
-        );
-
-
-    const secs =
-        Math.floor(
-            seconds % 60
-        );
-
-
-    return (
-        String(minutes)
-            .padStart(2, "0")
-        +
-        ":"
-        +
-        String(secs)
-            .padStart(2, "0")
-    );
-}
-
-
-
-/* =========================
-   CREATE SONG LIST
-========================= */
-
-function createSongList() {
-
-    songList.innerHTML = "";
-
-
-    songs.forEach(
-        (song, index) => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "song";
-
-
-            /*
-                CURRENT SONG
-            */
-
-            if (index === currentSong) {
-
-                button.innerHTML = `
-                    🎤 ${song.title}
-                    <span>▶ NOW PLAYING</span>
-                `;
-
-                button.style.border =
-                    "2px solid #00ff00";
-
-            }
-
-
-            /*
-                RESERVED SONG
-            */
-
-            else if (
-                reservedQueue.includes(index)
-            ) {
-
-                const position =
-                    reservedQueue.indexOf(index)
-                    + 1;
-
-
-                button.innerHTML = `
-                    🎵 ${song.title}
-                    <span>📌 RESERVED #${position}</span>
-                `;
-
-                button.style.border =
-                    "2px solid #ffaa00";
-
-
-                /*
-                    Clicking a reserved
-                    song cancels it.
-                */
-
-                button.onclick =
-                    function () {
-
-                        cancelReservation(
-                            index
-                        );
-
-                    };
-
-            }
-
-
-            /*
-                AVAILABLE SONG
-            */
-
-            else {
-
-                button.innerHTML = `
-                    🎵 ${song.title}
-                    <span>
-                        ${song.artist}
-                        • CLICK TO RESERVE
-                    </span>
-                `;
-
-
-                /*
-                    IMPORTANT:
-                    Clicking does NOT play.
-
-                    It only reserves.
-                */
-
-                button.onclick =
-                    function () {
-
-                        reserveSong(
-                            index
-                        );
-
-                    };
-            }
-
-
-            songList.appendChild(
-                button
-            );
-
-        }
-    );
-}
-
+        createYouTubePlayer();
+    };
 
 
 /* =========================
    START
 ========================= */
+
+renderSongs();
