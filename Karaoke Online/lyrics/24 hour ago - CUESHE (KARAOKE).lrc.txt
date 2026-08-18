@@ -1,0 +1,4 @@
+[00:12.50] first line
+[00:17.20] second line
+[00:34.80] third line
+[00:54.00] fourth line

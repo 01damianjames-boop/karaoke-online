@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Karaoke Online</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            🎤 KARAOKE ONLINE
+        </div>
+
+        <div class="connection">
+            🟢 Connected
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- MAIN KARAOKE SCREEN -->
+        <section class="screen">
+
+            <div class="song-info">
+
+                <div class="now-playing">
+                    NOW PLAYING
+                </div>
+
+                <h1 id="songTitle">
+                    No Song Selected
+                </h1>
+
+                <p id="artist">
+                    Choose a song from the remote
+                </p>
+
+            </div>
+
+
+            <!-- YOUTUBE PLAYER -->
+            <div class="youtube-container">
+
+                <iframe
+                    id="youtubePlayer"
+                    width="100%"
+                    height="100%"
+                    src="about:blank"
+                    title="Karaoke Player"
+                    frameborder="0"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+
+            </div>
+
+
+            <!-- CONTROLS -->
+
+            <div class="controls">
+
+                <button onclick="previousSong()">
+                    ⏮ Previous
+                </button>
+
+                <button class="play" onclick="togglePlay()">
+                    ▶ Play / Pause
+                </button>
+
+                <button onclick="nextSong()">
+                    Next ⏭
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- REMOTE -->
+        <section class="remote">
+
+            <div class="remote-header">
+
+                <h2>
+                    📱 REMOTE
+                </h2>
+
+            </div>
+
+
+            <input
+                id="search"
+                type="text"
+                placeholder="🔎 Search song..."
+                oninput="searchSongs()"
+            >
+
+
+            <div id="songList">
+
+                <!-- Songs will appear here -->
+
+            </div>
+
+
+            <div class="remote-buttons">
+
+                <button onclick="previousSong()">
+                    ⏮ Previous
+                </button>
+
+                <button onclick="togglePlay()">
+                    ▶ Play / Pause
+                </button>
+
+                <button onclick="nextSong()">
+                    Next ⏭
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        KARAOKE ONLINE • TV + PC + PHONE REMOTE
+    </footer>
+
+</div>
+
+
+<script src="./app.js"></script>
+
+</body>
+
+</html>
