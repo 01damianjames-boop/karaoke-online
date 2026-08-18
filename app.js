@@ -1,5 +1,11 @@
 const songs = [
     {
+        title: "Heaven Knows",
+        artist: "Rick Price",
+        youtube: "m7o9fbTsRuc"
+    },
+
+    {
         title: "Back to me",
         artist: "Cueshe - Karaoke",
         youtube: "jNYXQLWlk6k"
