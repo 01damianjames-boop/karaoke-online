@@ -1,6 +1,7 @@
 /* =========================================================
    KARAOKE ONLINE
    CONTROL 1 + PHONE CONTROL 2
+   AUTO NEXT RESERVED SONG
 ========================================================= */
 
 
@@ -56,6 +57,18 @@ let youtubePlayer = null;
 let pendingSongIndex = null;
 
 let isPlaying = false;
+
+
+/*
+ * Prevent double NEXT
+ */
+let isAutoNextRunning = false;
+
+
+/*
+ * Timer for checking video ending
+ */
+let endChecker = null;
 
 
 /* =========================================================
@@ -432,7 +445,7 @@ function copyRemoteLink() {
 
 
 /* =========================================================
-   SEND STATE TO ONE REMOTE
+   SEND STATE
 ========================================================= */
 
 function sendState(connection) {
@@ -706,6 +719,13 @@ function loadSong(index) {
     }
 
 
+    /*
+     * Reset automatic next protection
+     */
+
+    isAutoNextRunning = false;
+
+
     currentSong = index;
 
 
@@ -740,12 +760,16 @@ function loadSong(index) {
     }
 
 
-    youtubePlayer.loadVideoById(
-        song.youtube
-    );
+    /*
+     * Load and PLAY the selected song
+     */
+
+    youtubePlayer.loadVideoById({
+        videoId: song.youtube
+    });
 
 
-    isPlaying = false;
+    isPlaying = true;
 
     broadcastState();
 
@@ -773,9 +797,9 @@ function onYouTubePlayerReady(event) {
             songs[index];
 
 
-        event.target.loadVideoById(
-            song.youtube
-        );
+        event.target.loadVideoById({
+            videoId: song.youtube
+        });
 
 
     } else {
@@ -784,16 +808,170 @@ function onYouTubePlayerReady(event) {
             songs[currentSong];
 
 
-        event.target.loadVideoById(
-            song.youtube
+        event.target.loadVideoById({
+            videoId: song.youtube
+        });
+
+    }
+
+
+    isPlaying = true;
+
+    /*
+     * Start END checker
+     */
+
+    startEndChecker();
+
+    broadcastState();
+
+}
+
+
+/* =========================================================
+   START END CHECKER
+========================================================= */
+
+function startEndChecker() {
+
+    /*
+     * Stop old checker
+     */
+
+    if (endChecker) {
+
+        clearInterval(
+            endChecker
         );
 
     }
 
 
-    isPlaying = false;
+    /*
+     * Check every 500 milliseconds
+     */
 
-    broadcastState();
+    endChecker =
+        setInterval(
+            function () {
+
+                if (!youtubePlayer) {
+                    return;
+                }
+
+
+                /*
+                 * Only check while playing
+                 */
+
+                if (
+                    youtubePlayer.getPlayerState() !==
+                    YT.PlayerState.PLAYING
+                ) {
+
+                    return;
+
+                }
+
+
+                const currentTime =
+                    youtubePlayer.getCurrentTime();
+
+
+                const duration =
+                    youtubePlayer.getDuration();
+
+
+                /*
+                 * If video is almost finished
+                 */
+
+                if (
+                    duration > 0 &&
+                    currentTime >=
+                    duration - 0.8
+                ) {
+
+                    automaticNextSong();
+
+                }
+
+            },
+            500
+        );
+
+}
+
+
+/* =========================================================
+   AUTOMATIC NEXT
+========================================================= */
+
+function automaticNextSong() {
+
+    /*
+     * Prevent double trigger
+     */
+
+    if (isAutoNextRunning) {
+        return;
+    }
+
+
+    isAutoNextRunning = true;
+
+
+    console.log(
+        "🎵 SONG FINISHED - AUTO NEXT"
+    );
+
+
+    /*
+     * RESERVED SONG FIRST
+     */
+
+    if (
+        reservedSongs.length > 0
+    ) {
+
+        const nextIndex =
+            reservedSongs.shift();
+
+
+        console.log(
+            "📌 Playing RESERVED song:",
+            songs[nextIndex].title
+        );
+
+
+        loadSong(
+            nextIndex
+        );
+
+
+        renderSongs();
+
+        broadcastState();
+
+        return;
+
+    }
+
+
+    /*
+     * NO RESERVED SONG
+     *
+     * Go to next song normally.
+     */
+
+    console.log(
+        "➡️ No reserve - playing next song"
+    );
+
+
+    loadSong(
+        currentSong + 1
+    );
 
 }
 
@@ -804,6 +982,10 @@ function onYouTubePlayerReady(event) {
 
 function onYouTubePlayerStateChange(event) {
 
+    /*
+     * PLAYING
+     */
+
     if (
         event.data ===
         YT.PlayerState.PLAYING
@@ -811,10 +993,18 @@ function onYouTubePlayerStateChange(event) {
 
         isPlaying = true;
 
+        isAutoNextRunning = false;
+
+        startEndChecker();
+
         broadcastState();
 
     }
 
+
+    /*
+     * PAUSED
+     */
 
     if (
         event.data ===
@@ -828,24 +1018,30 @@ function onYouTubePlayerStateChange(event) {
     }
 
 
+    /*
+     * ENDED
+     */
+
     if (
         event.data ===
         YT.PlayerState.ENDED
     ) {
+
+        console.log(
+            "🎵 YOUTUBE ENDED EVENT"
+        );
+
 
         isPlaying = false;
 
         broadcastState();
 
 
-        setTimeout(
-            function () {
+        /*
+         * Automatically play reserve
+         */
 
-                nextSong();
-
-            },
-            300
-        );
+        automaticNextSong();
 
     }
 
@@ -870,9 +1066,16 @@ function createYouTubePlayer() {
 
                     autoplay: 0,
 
+                    controls: 1,
+
                     rel: 0,
 
-                    playsinline: 1
+                    playsinline: 1,
+
+                    enablejsapi: 1,
+
+                    origin:
+                        window.location.origin
 
                 },
 
@@ -893,10 +1096,14 @@ function createYouTubePlayer() {
 
 
 /* =========================================================
-   NEXT
+   NEXT BUTTON
 ========================================================= */
 
 function nextSong() {
+
+    /*
+     * Manual NEXT also uses reserved queue
+     */
 
     if (
         reservedSongs.length > 0
@@ -919,6 +1126,10 @@ function nextSong() {
 
     }
 
+
+    /*
+     * No reserve
+     */
 
     loadSong(
         currentSong + 1
@@ -962,7 +1173,6 @@ function togglePlay() {
 
         youtubePlayer.pauseVideo();
 
-
     } else {
 
         youtubePlayer.playVideo();
@@ -973,10 +1183,14 @@ function togglePlay() {
 
 
 /* =========================================================
-   RESERVE
+   RESERVE SONG
 ========================================================= */
 
 function reserveSong(index) {
+
+    /*
+     * Current song cannot be reserved
+     */
 
     if (
         index === currentSong
@@ -987,6 +1201,10 @@ function reserveSong(index) {
     }
 
 
+    /*
+     * Don't duplicate
+     */
+
     if (
         reservedSongs.includes(index)
     ) {
@@ -996,8 +1214,18 @@ function reserveSong(index) {
     }
 
 
+    /*
+     * ADD TO QUEUE
+     */
+
     reservedSongs.push(
         index
+    );
+
+
+    console.log(
+        "📌 RESERVED:",
+        songs[index].title
     );
 
 
@@ -1016,8 +1244,11 @@ function removeReserve(index) {
 
     reservedSongs =
         reservedSongs.filter(
-            songIndex =>
-                songIndex !== index
+            function (songIndex) {
+
+                return songIndex !== index;
+
+            }
         );
 
 
@@ -1104,7 +1335,9 @@ function renderSongs(
                 "song";
 
 
-            /* CURRENT */
+            /*
+             * CURRENT SONG
+             */
 
             if (
                 index === currentSong
@@ -1135,11 +1368,12 @@ function renderSongs(
 
                     };
 
-
             }
 
 
-            /* RESERVED */
+            /*
+             * RESERVED SONG
+             */
 
             else if (
                 reservedSongs.includes(
@@ -1178,11 +1412,12 @@ function renderSongs(
 
                     };
 
-
             }
 
 
-            /* NORMAL */
+            /*
+             * NORMAL SONG
+             */
 
             else {
 
@@ -1295,6 +1530,10 @@ function renderRemoteSongs(
                 "phone-song";
 
 
+            /*
+             * CURRENT
+             */
+
             if (
                 index === currentSong
             ) {
@@ -1314,8 +1553,12 @@ function renderRemoteSongs(
 
                 `;
 
-
             }
+
+
+            /*
+             * RESERVED
+             */
 
             else if (
                 reservedSongs.includes(
@@ -1356,6 +1599,11 @@ function renderRemoteSongs(
                     };
 
             }
+
+
+            /*
+             * NORMAL
+             */
 
             else {
 
