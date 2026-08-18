@@ -2,6 +2,20 @@
    KARAOKE ONLINE
    CONTROL 1 + PHONE CONTROL 2
    AUTO NEXT RESERVED SONG
+
+   VERSION:
+   LOCAL HTML5 VIDEO PLAYER
+
+   NO YOUTUBE PLAYER
+   NO YOUTUBE ADS
+
+   Put your karaoke videos inside:
+
+   /songs/heaven-knows.mp4
+   /songs/back-to-me.mp4
+   /songs/24-hours.mp4
+   /songs/stay.mp4
+   /songs/borrowed-time.mp4
 ========================================================= */
 
 
@@ -14,31 +28,31 @@ const songs = [
     {
         title: "Heaven Knows",
         artist: "Rick Price",
-        youtube: "m7o9fbTsRuc"
+        video: "songs/heaven-knows.mp4"
     },
 
     {
         title: "Back to me",
         artist: "Cueshe - Karaoke",
-        youtube: "jNYXQLWlk6k"
+        video: "songs/back-to-me.mp4"
     },
 
     {
         title: "24 Hours",
         artist: "Cueshe - Karaoke",
-        youtube: "BiKU79XjelQ"
+        video: "songs/24-hours.mp4"
     },
 
     {
         title: "Stay",
         artist: "Karaoke",
-        youtube: "ymalJ5AMH4U"
+        video: "songs/stay.mp4"
     },
 
     {
         title: "Borrowed Time",
         artist: "Karaoke",
-        youtube: "feskSn7ZI6Y"
+        video: "songs/borrowed-time.mp4"
     }
 
 ];
@@ -52,31 +66,21 @@ let currentSong = 0;
 
 let reservedSongs = [];
 
-let youtubePlayer = null;
-
-let pendingSongIndex = null;
+let karaokeVideo = null;
 
 let isPlaying = false;
 
-
-/*
- * Prevent double NEXT
- */
 let isAutoNextRunning = false;
 
 
-/*
- * Timer for checking video ending
- */
-let endChecker = null;
-
-
 /* =========================================================
-   REMOTE / PEER STATE
+   REMOTE / URL STATE
 ========================================================= */
 
 const urlParams =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+        window.location.search
+    );
 
 const remoteRoom =
     urlParams.get("remote");
@@ -97,7 +101,7 @@ let remoteConnections = [];
 
 
 /* =========================================================
-   START MODE
+   START
 ========================================================= */
 
 document.addEventListener(
@@ -124,15 +128,111 @@ document.addEventListener(
 
 function startHost() {
 
-    document.getElementById("hostApp").style.display =
-        "block";
+    document.getElementById(
+        "hostApp"
+    ).style.display = "block";
 
-    document.getElementById("remoteApp").style.display =
-        "none";
+
+    document.getElementById(
+        "remoteApp"
+    ).style.display = "none";
+
+
+    karaokeVideo =
+        document.getElementById(
+            "karaokeVideo"
+        );
+
+
+    if (karaokeVideo) {
+
+        karaokeVideo.addEventListener(
+            "ended",
+            function () {
+
+                console.log(
+                    "🎵 SONG FINISHED"
+                );
+
+                isPlaying = false;
+
+                broadcastState();
+
+                automaticNextSong();
+
+            }
+        );
+
+
+        karaokeVideo.addEventListener(
+            "play",
+            function () {
+
+                isPlaying = true;
+
+                isAutoNextRunning = false;
+
+                broadcastState();
+
+            }
+        );
+
+
+        karaokeVideo.addEventListener(
+            "pause",
+            function () {
+
+                if (
+                    !karaokeVideo.ended
+                ) {
+
+                    isPlaying = false;
+
+                    broadcastState();
+
+                }
+
+            }
+        );
+
+
+        karaokeVideo.addEventListener(
+            "error",
+            function () {
+
+                console.error(
+                    "Video error:",
+                    karaokeVideo.error
+                );
+
+                isPlaying = false;
+
+                const errorMessage =
+                    document.getElementById(
+                        "videoError"
+                    );
+
+                if (errorMessage) {
+
+                    errorMessage.textContent =
+                        "⚠️ Video file not found or cannot be played.";
+
+                    errorMessage.style.display =
+                        "block";
+
+                }
+
+            }
+        );
+
+    }
+
 
     startHostPeer();
 
     renderSongs();
+
+    updateSongDisplay();
 
 }
 
@@ -143,11 +243,15 @@ function startHost() {
 
 function startRemote() {
 
-    document.getElementById("hostApp").style.display =
-        "none";
+    document.getElementById(
+        "hostApp"
+    ).style.display = "none";
 
-    document.getElementById("remoteApp").style.display =
-        "block";
+
+    document.getElementById(
+        "remoteApp"
+    ).style.display = "block";
+
 
     startRemotePeer();
 
@@ -162,14 +266,19 @@ function startHostPeer() {
 
     peer = new Peer();
 
+
     peer.on(
         "open",
         function (id) {
 
             const code =
                 id.substring(
-                    Math.max(0, id.length - 8)
+                    Math.max(
+                        0,
+                        id.length - 8
+                    )
                 );
+
 
             document.getElementById(
                 "roomCode"
@@ -190,7 +299,9 @@ function startHostPeer() {
                 remoteUrl;
 
 
-            generateQRCode(remoteUrl);
+            generateQRCode(
+                remoteUrl
+            );
 
 
             document.getElementById(
@@ -206,7 +317,10 @@ function startHostPeer() {
         "connection",
         function (connection) {
 
-            remoteConnections.push(connection);
+            remoteConnections.push(
+                connection
+            );
+
 
             document.getElementById(
                 "phoneStatus"
@@ -218,7 +332,9 @@ function startHostPeer() {
                 "open",
                 function () {
 
-                    sendState(connection);
+                    sendState(
+                        connection
+                    );
 
                 }
             );
@@ -242,8 +358,13 @@ function startHostPeer() {
 
                     remoteConnections =
                         remoteConnections.filter(
-                            c => c !== connection
+                            function (c) {
+
+                                return c !== connection;
+
+                            }
                         );
+
 
                     if (
                         remoteConnections.length === 0
@@ -271,6 +392,7 @@ function startHostPeer() {
                 "Peer error:",
                 error
             );
+
 
             document.getElementById(
                 "connectionStatus"
@@ -365,6 +487,7 @@ function startRemotePeer() {
                 error
             );
 
+
             document.getElementById(
                 "remoteConnectionStatus"
             ).textContent =
@@ -377,7 +500,7 @@ function startRemotePeer() {
 
 
 /* =========================================================
-   GENERATE QR
+   QR CODE
 ========================================================= */
 
 function generateQRCode(url) {
@@ -387,7 +510,14 @@ function generateQRCode(url) {
             "qrcode"
         );
 
+
+    if (!qr) {
+        return;
+    }
+
+
     qr.innerHTML = "";
+
 
     if (
         typeof QRCode !== "undefined"
@@ -413,10 +543,19 @@ function generateQRCode(url) {
 
 function copyRemoteLink() {
 
-    const link =
+    const element =
         document.getElementById(
             "remoteLink"
-        ).textContent;
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    const link =
+        element.textContent;
 
 
     if (
@@ -436,6 +575,15 @@ function copyRemoteLink() {
 
                 alert(
                     "📱 Remote link copied!"
+                );
+
+            }
+        )
+        .catch(
+            function () {
+
+                alert(
+                    "Could not copy the link."
                 );
 
             }
@@ -492,7 +640,9 @@ function broadcastState() {
     remoteConnections.forEach(
         function (connection) {
 
-            sendState(connection);
+            sendState(
+                connection
+            );
 
         }
     );
@@ -511,7 +661,9 @@ function handleRemoteCommand(data) {
     }
 
 
-    switch (data.type) {
+    switch (
+        data.type
+    ) {
 
         case "reserve":
 
@@ -584,8 +736,10 @@ function handleHostState(data) {
     currentSong =
         data.currentSong;
 
+
     reservedSongs =
         data.reservedSongs || [];
+
 
     isPlaying =
         data.isPlaying;
@@ -600,16 +754,32 @@ function handleHostState(data) {
     }
 
 
-    document.getElementById(
-        "remoteSongTitle"
-    ).textContent =
-        song.title;
+    const title =
+        document.getElementById(
+            "remoteSongTitle"
+        );
 
 
-    document.getElementById(
-        "remoteArtist"
-    ).textContent =
-        song.artist;
+    const artist =
+        document.getElementById(
+            "remoteArtist"
+        );
+
+
+    if (title) {
+
+        title.textContent =
+            song.title;
+
+    }
+
+
+    if (artist) {
+
+        artist.textContent =
+            song.artist;
+
+    }
 
 
     renderRemoteSongs();
@@ -672,7 +842,7 @@ function remoteReserve(index) {
 
 
 /* =========================================================
-   REMOTE REMOVE
+   REMOTE REMOVE RESERVE
 ========================================================= */
 
 function remoteRemoveReserve(index) {
@@ -704,7 +874,9 @@ function remoteRemoveReserve(index) {
 
 function loadSong(index) {
 
-    if (index < 0) {
+    if (
+        index < 0
+    ) {
 
         index =
             songs.length - 1;
@@ -712,46 +884,39 @@ function loadSong(index) {
     }
 
 
-    if (index >= songs.length) {
+    if (
+        index >= songs.length
+    ) {
 
         index = 0;
 
     }
 
 
-    /*
-     * Reset automatic next protection
-     */
-
-    isAutoNextRunning = false;
-
-
-    currentSong = index;
-
-
     const song =
-        songs[currentSong];
+        songs[index];
 
 
-    document.getElementById(
-        "songTitle"
-    ).textContent =
-        song.title;
+    if (!song) {
+        return;
+    }
 
 
-    document.getElementById(
-        "artist"
-    ).textContent =
-        song.artist;
+    isAutoNextRunning =
+        false;
+
+
+    currentSong =
+        index;
+
+
+    updateSongDisplay();
 
 
     renderSongs();
 
 
-    if (!youtubePlayer) {
-
-        pendingSongIndex =
-            index;
+    if (!karaokeVideo) {
 
         broadcastState();
 
@@ -761,67 +926,71 @@ function loadSong(index) {
 
 
     /*
-     * Load and PLAY the selected song
+     * Stop current video first.
      */
 
-    youtubePlayer.loadVideoById({
-        videoId: song.youtube
-    });
+    karaokeVideo.pause();
 
 
-    isPlaying = true;
+    /*
+     * Change source.
+     */
 
-    broadcastState();
+    karaokeVideo.src =
+        song.video;
 
-}
+
+    /*
+     * Start from beginning.
+     */
+
+    karaokeVideo.currentTime =
+        0;
 
 
-/* =========================================================
-   YOUTUBE PLAYER READY
-========================================================= */
+    /*
+     * Load new video.
+     */
 
-function onYouTubePlayerReady(event) {
+    karaokeVideo.load();
+
+
+    /*
+     * Try automatic playback.
+     */
+
+    const playPromise =
+        karaokeVideo.play();
+
 
     if (
-        pendingSongIndex !== null
+        playPromise &&
+        typeof playPromise.catch === "function"
     ) {
 
-        const index =
-            pendingSongIndex;
+        playPromise.catch(
+            function (error) {
 
-        pendingSongIndex =
-            null;
-
-
-        const song =
-            songs[index];
+                console.log(
+                    "Autoplay prevented:",
+                    error
+                );
 
 
-        event.target.loadVideoById({
-            videoId: song.youtube
-        });
+                isPlaying =
+                    false;
 
 
-    } else {
+                broadcastState();
 
-        const song =
-            songs[currentSong];
-
-
-        event.target.loadVideoById({
-            videoId: song.youtube
-        });
+            }
+        );
 
     }
 
 
     isPlaying = true;
 
-    /*
-     * Start END checker
-     */
-
-    startEndChecker();
 
     broadcastState();
 
@@ -829,76 +998,74 @@ function onYouTubePlayerReady(event) {
 
 
 /* =========================================================
-   START END CHECKER
+   UPDATE SONG DISPLAY
 ========================================================= */
 
-function startEndChecker() {
+function updateSongDisplay() {
 
-    /*
-     * Stop old checker
-     */
+    const song =
+        songs[currentSong];
 
-    if (endChecker) {
 
-        clearInterval(
-            endChecker
+    if (!song) {
+        return;
+    }
+
+
+    const title =
+        document.getElementById(
+            "songTitle"
         );
+
+
+    const artist =
+        document.getElementById(
+            "artist"
+        );
+
+
+    if (title) {
+
+        title.textContent =
+            song.title;
 
     }
 
 
-    /*
-     * Check every 500 milliseconds
-     */
+    if (artist) {
 
-    endChecker =
-        setInterval(
-            function () {
+        artist.textContent =
+            song.artist;
 
-                if (!youtubePlayer) {
-                    return;
-                }
+    }
 
 
-                /*
-                 * Only check while playing
-                 */
-
-                if (
-                    youtubePlayer.getPlayerState() !==
-                    YT.PlayerState.PLAYING
-                ) {
-
-                    return;
-
-                }
-
-
-                const currentTime =
-                    youtubePlayer.getCurrentTime();
-
-
-                const duration =
-                    youtubePlayer.getDuration();
-
-
-                /*
-                 * If video is almost finished
-                 */
-
-                if (
-                    duration > 0 &&
-                    currentTime >=
-                    duration - 0.8
-                ) {
-
-                    automaticNextSong();
-
-                }
-
-            },
-            500
+    const remoteTitle =
+        document.getElementById(
+            "remoteSongTitle"
         );
+
+
+    const remoteArtist =
+        document.getElementById(
+            "remoteArtist"
+        );
+
+
+    if (remoteTitle) {
+
+        remoteTitle.textContent =
+            song.title;
+
+    }
+
+
+    if (remoteArtist) {
+
+        remoteArtist.textContent =
+            song.artist;
+
+    }
 
 }
 
@@ -909,16 +1076,17 @@ function startEndChecker() {
 
 function automaticNextSong() {
 
-    /*
-     * Prevent double trigger
-     */
+    if (
+        isAutoNextRunning
+    ) {
 
-    if (isAutoNextRunning) {
         return;
+
     }
 
 
-    isAutoNextRunning = true;
+    isAutoNextRunning =
+        true;
 
 
     console.log(
@@ -939,19 +1107,20 @@ function automaticNextSong() {
 
 
         console.log(
-            "📌 Playing RESERVED song:",
+            "📌 Playing RESERVED:",
             songs[nextIndex].title
-        );
-
-
-        loadSong(
-            nextIndex
         );
 
 
         renderSongs();
 
         broadcastState();
+
+
+        loadSong(
+            nextIndex
+        );
+
 
         return;
 
@@ -960,12 +1129,10 @@ function automaticNextSong() {
 
     /*
      * NO RESERVED SONG
-     *
-     * Go to next song normally.
      */
 
     console.log(
-        "➡️ No reserve - playing next song"
+        "➡️ No reserve - playing next"
     );
 
 
@@ -977,132 +1144,17 @@ function automaticNextSong() {
 
 
 /* =========================================================
-   YOUTUBE STATE
-========================================================= */
-
-function onYouTubePlayerStateChange(event) {
-
-    /*
-     * PLAYING
-     */
-
-    if (
-        event.data ===
-        YT.PlayerState.PLAYING
-    ) {
-
-        isPlaying = true;
-
-        isAutoNextRunning = false;
-
-        startEndChecker();
-
-        broadcastState();
-
-    }
-
-
-    /*
-     * PAUSED
-     */
-
-    if (
-        event.data ===
-        YT.PlayerState.PAUSED
-    ) {
-
-        isPlaying = false;
-
-        broadcastState();
-
-    }
-
-
-    /*
-     * ENDED
-     */
-
-    if (
-        event.data ===
-        YT.PlayerState.ENDED
-    ) {
-
-        console.log(
-            "🎵 YOUTUBE ENDED EVENT"
-        );
-
-
-        isPlaying = false;
-
-        broadcastState();
-
-
-        /*
-         * Automatically play reserve
-         */
-
-        automaticNextSong();
-
-    }
-
-}
-
-
-/* =========================================================
-   CREATE YOUTUBE PLAYER
-========================================================= */
-
-function createYouTubePlayer() {
-
-    youtubePlayer =
-        new YT.Player(
-            "youtubePlayer",
-            {
-
-                videoId:
-                    songs[currentSong].youtube,
-
-                playerVars: {
-
-                    autoplay: 0,
-
-                    controls: 1,
-
-                    rel: 0,
-
-                    playsinline: 1,
-
-                    enablejsapi: 1,
-
-                    origin:
-                        window.location.origin
-
-                },
-
-                events: {
-
-                    onReady:
-                        onYouTubePlayerReady,
-
-                    onStateChange:
-                        onYouTubePlayerStateChange
-
-                }
-
-            }
-        );
-
-}
-
-
-/* =========================================================
    NEXT BUTTON
 ========================================================= */
 
 function nextSong() {
 
+    isAutoNextRunning =
+        false;
+
+
     /*
-     * Manual NEXT also uses reserved queue
+     * RESERVED SONG FIRST
      */
 
     if (
@@ -1113,8 +1165,9 @@ function nextSong() {
             reservedSongs.shift();
 
 
-        loadSong(
-            nextIndex
+        console.log(
+            "⏭ MANUAL NEXT - RESERVED:",
+            songs[nextIndex].title
         );
 
 
@@ -1122,14 +1175,25 @@ function nextSong() {
 
         broadcastState();
 
+
+        loadSong(
+            nextIndex
+        );
+
+
         return;
 
     }
 
 
     /*
-     * No reserve
+     * NORMAL NEXT
      */
+
+    console.log(
+        "⏭ MANUAL NEXT"
+    );
+
 
     loadSong(
         currentSong + 1
@@ -1144,6 +1208,10 @@ function nextSong() {
 
 function previousSong() {
 
+    isAutoNextRunning =
+        false;
+
+
     loadSong(
         currentSong - 1
     );
@@ -1157,25 +1225,41 @@ function previousSong() {
 
 function togglePlay() {
 
-    if (!youtubePlayer) {
+    if (!karaokeVideo) {
         return;
     }
 
 
-    const state =
-        youtubePlayer.getPlayerState();
-
-
     if (
-        state ===
-        YT.PlayerState.PLAYING
+        karaokeVideo.paused ||
+        karaokeVideo.ended
     ) {
 
-        youtubePlayer.pauseVideo();
+        const playPromise =
+            karaokeVideo.play();
+
+
+        if (
+            playPromise &&
+            typeof playPromise.catch === "function"
+        ) {
+
+            playPromise.catch(
+                function (error) {
+
+                    console.log(
+                        "Play prevented:",
+                        error
+                    );
+
+                }
+            );
+
+        }
 
     } else {
 
-        youtubePlayer.playVideo();
+        karaokeVideo.pause();
 
     }
 
@@ -1189,7 +1273,7 @@ function togglePlay() {
 function reserveSong(index) {
 
     /*
-     * Current song cannot be reserved
+     * Current song cannot be reserved.
      */
 
     if (
@@ -1202,7 +1286,7 @@ function reserveSong(index) {
 
 
     /*
-     * Don't duplicate
+     * Don't duplicate.
      */
 
     if (
@@ -1213,10 +1297,6 @@ function reserveSong(index) {
 
     }
 
-
-    /*
-     * ADD TO QUEUE
-     */
 
     reservedSongs.push(
         index
@@ -1265,13 +1345,21 @@ function removeReserve(index) {
 
 function searchSongs() {
 
+    const input =
+        document.getElementById(
+            "search"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
     const search =
-        document
-            .getElementById(
-                "search"
-            )
-            .value
-            .toLowerCase();
+        input.value
+            .toLowerCase()
+            .trim();
 
 
     renderSongs(
@@ -1306,18 +1394,17 @@ function renderSongs(
     songs.forEach(
         function (song, index) {
 
+            const title =
+                song.title.toLowerCase();
+
+
+            const artist =
+                song.artist.toLowerCase();
+
+
             if (
-
-                !song.title
-                    .toLowerCase()
-                    .includes(search)
-
-                &&
-
-                !song.artist
-                    .toLowerCase()
-                    .includes(search)
-
+                !title.includes(search) &&
+                !artist.includes(search)
             ) {
 
                 return;
@@ -1372,7 +1459,7 @@ function renderSongs(
 
 
             /*
-             * RESERVED SONG
+             * RESERVED
              */
 
             else if (
@@ -1416,7 +1503,7 @@ function renderSongs(
 
 
             /*
-             * NORMAL SONG
+             * NORMAL
              */
 
             else {
@@ -1460,13 +1547,21 @@ function renderSongs(
 
 function searchRemoteSongs() {
 
+    const input =
+        document.getElementById(
+            "remoteSearch"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
     const search =
-        document
-            .getElementById(
-                "remoteSearch"
-            )
-            .value
-            .toLowerCase();
+        input.value
+            .toLowerCase()
+            .trim();
 
 
     renderRemoteSongs(
@@ -1501,18 +1596,17 @@ function renderRemoteSongs(
     songs.forEach(
         function (song, index) {
 
+            const title =
+                song.title.toLowerCase();
+
+
+            const artist =
+                song.artist.toLowerCase();
+
+
             if (
-
-                !song.title
-                    .toLowerCase()
-                    .includes(search)
-
-                &&
-
-                !song.artist
-                    .toLowerCase()
-                    .includes(search)
-
+                !title.includes(search) &&
+                !artist.includes(search)
             ) {
 
                 return;
@@ -1674,7 +1768,10 @@ function renderRemoteQueue() {
 
 
     reservedSongs.forEach(
-        function (index, position) {
+        function (
+            index,
+            position
+        ) {
 
             const song =
                 songs[index];
@@ -1716,19 +1813,3 @@ function renderRemoteQueue() {
     );
 
 }
-
-
-/* =========================================================
-   YOUTUBE CALLBACK
-========================================================= */
-
-window.onYouTubeIframeAPIReady =
-    function () {
-
-        if (!isRemote) {
-
-            createYouTubePlayer();
-
-        }
-
-    };
