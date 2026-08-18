@@ -4,20 +4,34 @@
     padding: 0;
 }
 
+
 body {
-    font-family: Arial, sans-serif;
+
+    font-family:
+        Arial,
+        sans-serif;
+
     background: #080808;
+
     color: white;
+
     min-height: 100vh;
+
 }
+
 
 button,
 input {
+
     font-family: inherit;
+
 }
 
+
 button {
+
     cursor: pointer;
+
 }
 
 
@@ -26,11 +40,16 @@ button {
 ========================================================= */
 
 #hostApp {
+
     min-height: 100vh;
+
 }
 
+
 .app {
+
     min-height: 100vh;
+
 }
 
 
@@ -39,10 +58,13 @@ button {
 ========================================================= */
 
 header {
+
     height: 75px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     padding: 0 35px;
@@ -50,17 +72,27 @@ header {
     background: #111;
 
     border-bottom: 2px solid #292929;
+
 }
+
 
 .logo {
+
     font-size: 28px;
+
     font-weight: bold;
+
     letter-spacing: 2px;
+
 }
 
+
 .connection {
+
     font-size: 16px;
+
     color: #7cff7c;
+
 }
 
 
@@ -69,6 +101,7 @@ header {
 ========================================================= */
 
 main {
+
     display: grid;
 
     grid-template-columns:
@@ -79,7 +112,9 @@ main {
 
     padding: 20px;
 
-    min-height: calc(100vh - 120px);
+    min-height:
+        calc(100vh - 120px);
+
 }
 
 
@@ -105,6 +140,7 @@ main {
     padding: 30px;
 
     display: flex;
+
     flex-direction: column;
 
     justify-content: space-between;
@@ -116,12 +152,16 @@ main {
         rgba(0, 0, 0, 0.8);
 
     overflow: hidden;
+
 }
 
 
 .song-info {
+
     margin-top: 5px;
+
 }
+
 
 .now-playing {
 
@@ -132,28 +172,35 @@ main {
     color: #888;
 
     margin-bottom: 10px;
+
 }
+
 
 .song-info h1 {
 
     font-size: 38px;
 
     margin-bottom: 6px;
+
 }
+
 
 .song-info p {
 
     color: #aaa;
 
     font-size: 18px;
+
 }
 
 
 /* =========================================================
-   YOUTUBE
+   LOCAL KARAOKE VIDEO
 ========================================================= */
 
 .youtube-container {
+
+    position: relative;
 
     width: 100%;
 
@@ -166,15 +213,47 @@ main {
     border-radius: 12px;
 
     background: #000;
+
 }
 
-.youtube-container iframe {
+
+.karaoke-video {
 
     width: 100%;
 
     height: 100%;
 
-    border: none;
+    display: block;
+
+    object-fit: contain;
+
+    background: #000;
+
+}
+
+
+.video-error {
+
+    display: none;
+
+    position: absolute;
+
+    left: 20px;
+
+    right: 20px;
+
+    bottom: 20px;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    background: rgba(180, 0, 0, 0.9);
+
+    color: white;
+
+    font-size: 14px;
+
 }
 
 
@@ -189,11 +268,14 @@ main {
     justify-content: center;
 
     gap: 18px;
+
 }
+
 
 .controls button {
 
     width: 60px;
+
     height: 60px;
 
     border: none;
@@ -205,19 +287,25 @@ main {
     color: white;
 
     font-size: 22px;
+
 }
+
 
 .controls button:hover {
 
     background: #333;
+
 }
+
 
 .controls .play {
 
     width: 75px;
+
     height: 75px;
 
     font-size: 28px;
+
 }
 
 
@@ -244,7 +332,9 @@ main {
     min-width: 0;
 
     overflow: hidden;
+
 }
+
 
 .remote-header {
 
@@ -255,12 +345,16 @@ main {
     align-items: center;
 
     margin-bottom: 15px;
+
 }
+
 
 .remote-header h2 {
 
     font-size: 25px;
+
 }
+
 
 .small-text {
 
@@ -269,6 +363,7 @@ main {
     font-size: 12px;
 
     margin-top: 4px;
+
 }
 
 
@@ -289,7 +384,9 @@ main {
     margin-bottom: 15px;
 
     text-align: center;
+
 }
+
 
 .room-title {
 
@@ -300,7 +397,9 @@ main {
     letter-spacing: 2px;
 
     margin-bottom: 5px;
+
 }
+
 
 .room-code {
 
@@ -311,7 +410,9 @@ main {
     letter-spacing: 4px;
 
     margin-bottom: 10px;
+
 }
+
 
 .qrcode {
 
@@ -322,7 +423,9 @@ main {
     min-height: 150px;
 
     margin: 8px 0;
+
 }
+
 
 .qrcode img {
 
@@ -331,7 +434,9 @@ main {
     padding: 5px;
 
     border-radius: 5px;
+
 }
+
 
 .remote-link {
 
@@ -342,7 +447,9 @@ main {
     word-break: break-all;
 
     margin: 8px 0;
+
 }
+
 
 .copy-room {
 
@@ -357,12 +464,16 @@ main {
     background: #222;
 
     color: white;
+
 }
+
 
 .copy-room:hover {
 
     background: #333;
+
 }
+
 
 .phone-status {
 
@@ -371,6 +482,7 @@ main {
     font-size: 12px;
 
     margin-top: 8px;
+
 }
 
 
@@ -395,11 +507,14 @@ main {
     font-size: 16px;
 
     outline: none;
+
 }
+
 
 #search:focus {
 
     border-color: #666;
+
 }
 
 
@@ -420,25 +535,32 @@ main {
     padding-right: 3px;
 
     min-height: 0;
+
 }
+
 
 .song-list::-webkit-scrollbar {
 
     width: 7px;
+
 }
+
 
 .song-list::-webkit-scrollbar-track {
 
     background: #0b0b0b;
 
     border-radius: 10px;
+
 }
+
 
 .song-list::-webkit-scrollbar-thumb {
 
     background: #333;
 
     border-radius: 10px;
+
 }
 
 
@@ -467,12 +589,16 @@ main {
     font-size: 16px;
 
     transition: 0.15s;
+
 }
+
 
 .song:hover {
 
     background: #252525;
+
 }
+
 
 .song span {
 
@@ -483,26 +609,35 @@ main {
     font-size: 13px;
 
     margin-top: 5px;
+
 }
+
 
 .song.playing {
 
     border: 2px solid #20e020;
+
 }
+
 
 .song.playing span {
 
     color: #8cff8c;
+
 }
+
 
 .song.reserved {
 
     border: 2px solid #e0a900;
+
 }
+
 
 .song.reserved span {
 
     color: #ffcc00;
+
 }
 
 
@@ -519,7 +654,9 @@ main {
     gap: 10px;
 
     margin-top: 15px;
+
 }
+
 
 .remote-buttons button {
 
@@ -534,11 +671,14 @@ main {
     color: white;
 
     font-size: 15px;
+
 }
+
 
 .remote-buttons button:hover {
 
     background: #333;
+
 }
 
 
@@ -563,6 +703,7 @@ footer {
     font-size: 12px;
 
     letter-spacing: 1px;
+
 }
 
 
@@ -577,30 +718,39 @@ footer {
     min-height: 100vh;
 
     background: #080808;
+
 }
+
 
 .phone-remote-app {
 
     width: 100%;
 
     min-height: 100vh;
+
 }
+
 
 .phone-header {
 
     height: 65px;
 
     padding: 0 18px;
+
 }
+
 
 .phone-header .logo {
 
     font-size: 19px;
+
 }
+
 
 .phone-header .connection {
 
     font-size: 12px;
+
 }
 
 
@@ -614,7 +764,9 @@ footer {
 
     padding: 15px;
 
-    min-height: calc(100vh - 65px);
+    min-height:
+        calc(100vh - 65px);
+
 }
 
 
@@ -633,20 +785,25 @@ footer {
     padding: 20px;
 
     text-align: center;
+
 }
+
 
 .phone-now-playing h1 {
 
     font-size: 25px;
 
     margin-bottom: 5px;
+
 }
+
 
 .phone-now-playing p {
 
     color: #888;
 
     font-size: 15px;
+
 }
 
 
@@ -671,11 +828,14 @@ footer {
     font-size: 17px;
 
     outline: none;
+
 }
+
 
 #remoteSearch:focus {
 
     border-color: #666;
+
 }
 
 
@@ -692,7 +852,9 @@ footer {
     min-height: 300px;
 
     max-height: 55vh;
+
 }
+
 
 .phone-song {
 
@@ -713,12 +875,16 @@ footer {
     color: white;
 
     font-size: 16px;
+
 }
+
 
 .phone-song:active {
 
     transform: scale(0.98);
+
 }
+
 
 .phone-song span {
 
@@ -729,16 +895,21 @@ footer {
     font-size: 12px;
 
     margin-top: 5px;
+
 }
+
 
 .phone-song.playing {
 
     border: 2px solid #20e020;
+
 }
+
 
 .phone-song.reserved {
 
     border: 2px solid #e0a900;
+
 }
 
 
@@ -755,7 +926,9 @@ footer {
     border-radius: 12px;
 
     padding: 15px;
+
 }
+
 
 .queue-title {
 
@@ -766,13 +939,16 @@ footer {
     letter-spacing: 2px;
 
     margin-bottom: 10px;
+
 }
+
 
 .queue-item {
 
     display: grid;
 
-    grid-template-columns: 35px 1fr 35px;
+    grid-template-columns:
+        35px 1fr 35px;
 
     align-items: center;
 
@@ -780,22 +956,30 @@ footer {
 
     padding: 10px 0;
 
-    border-bottom: 1px solid #222;
+    border-bottom:
+        1px solid #222;
+
 }
+
 
 .queue-item strong {
 
     color: #ffcc00;
+
 }
+
 
 .queue-item span {
 
     font-size: 14px;
+
 }
+
 
 .queue-item button {
 
     width: 30px;
+
     height: 30px;
 
     border: none;
@@ -805,6 +989,7 @@ footer {
     background: #222;
 
     color: white;
+
 }
 
 
@@ -824,7 +1009,9 @@ footer {
     position: sticky;
 
     bottom: 0;
+
 }
+
 
 .phone-controls button {
 
@@ -839,18 +1026,23 @@ footer {
     color: white;
 
     font-size: 20px;
+
 }
+
 
 .phone-controls button:active {
 
     background: #444;
 
     transform: scale(0.97);
+
 }
+
 
 .phone-controls .phone-play {
 
     font-size: 17px;
+
 }
 
 
@@ -868,11 +1060,13 @@ footer {
 
     }
 
+
     .youtube-container {
 
         height: 350px;
 
     }
+
 
     .song-info h1 {
 
@@ -895,17 +1089,20 @@ footer {
 
     }
 
+
     #hostApp .screen {
 
         min-height: 500px;
 
     }
 
+
     #hostApp .remote {
 
         min-height: 500px;
 
     }
+
 
     #hostApp .youtube-container {
 
@@ -928,11 +1125,13 @@ footer {
 
     }
 
+
     #hostApp .logo {
 
         font-size: 20px;
 
     }
+
 
     #hostApp .connection {
 
@@ -940,11 +1139,13 @@ footer {
 
     }
 
+
     #hostApp main {
 
         padding: 10px;
 
     }
+
 
     #hostApp .screen,
     #hostApp .remote {
@@ -953,17 +1154,20 @@ footer {
 
     }
 
+
     #hostApp .youtube-container {
 
         height: 230px;
 
     }
 
+
     .phone-main {
 
         padding: 10px;
 
     }
+
 
     .phone-song-list {
 
