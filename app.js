@@ -1,7 +1,24 @@
 /* =========================================================
    KARAOKE ONLINE
-   CONTROL 1 + PHONE CONTROL 2
+   LOGIN + CONTROL 1 + PHONE CONTROL 2
 ========================================================= */
+
+
+/* =========================================================
+   LOGIN SETTINGS
+   CHANGE THESE TWO VALUES IF YOU WANT
+========================================================= */
+
+const LOGIN_USERNAME = "admin";
+const LOGIN_PASSWORD = "Karaoke123!";
+
+
+/* =========================================================
+   LOGIN STATE
+========================================================= */
+
+let isLoggedIn =
+    sessionStorage.getItem("karaokeLoggedIn") === "true";
 
 
 /* =========================================================
@@ -84,25 +101,214 @@ let remoteConnections = [];
 
 
 /* =========================================================
-   START MODE
+   LOGIN
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        if (isRemote) {
-
-            startRemote();
-
-        } else {
-
-            startHost();
-
-        }
+        showLoginScreen();
 
     }
 );
+
+
+/* =========================================================
+   SHOW LOGIN
+========================================================= */
+
+function showLoginScreen() {
+
+    const loginScreen =
+        document.getElementById("loginScreen");
+
+    const app =
+        document.getElementById("appContainer");
+
+    if (!loginScreen || !app) {
+        return;
+    }
+
+
+    if (isLoggedIn) {
+
+        loginScreen.style.display = "none";
+
+        app.style.display = "block";
+
+        startKaraokeApp();
+
+    } else {
+
+        loginScreen.style.display = "flex";
+
+        app.style.display = "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGIN FUNCTION
+========================================================= */
+
+function login() {
+
+    const username =
+        document
+            .getElementById("loginUsername")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+
+    const error =
+        document.getElementById("loginError");
+
+
+    if (
+        username === LOGIN_USERNAME &&
+        password === LOGIN_PASSWORD
+    ) {
+
+        sessionStorage.setItem(
+            "karaokeLoggedIn",
+            "true"
+        );
+
+        isLoggedIn = true;
+
+        error.textContent = "";
+
+        document.getElementById(
+            "loginUsername"
+        ).value = "";
+
+        document.getElementById(
+            "loginPassword"
+        ).value = "";
+
+        showLoginScreen();
+
+    } else {
+
+        error.textContent =
+            "❌ Incorrect username or password.";
+
+        document
+            .getElementById("loginPassword")
+            .value = "";
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGIN ENTER KEY
+========================================================= */
+
+function handleLoginKey(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        login();
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+    const confirmLogout =
+        confirm(
+            "Are you sure you want to logout?"
+        );
+
+    if (!confirmLogout) {
+        return;
+    }
+
+
+    sessionStorage.removeItem(
+        "karaokeLoggedIn"
+    );
+
+    isLoggedIn = false;
+
+
+    if (peer) {
+
+        try {
+            peer.destroy();
+        } catch (error) {
+            console.log(error);
+        }
+
+        peer = null;
+
+    }
+
+
+    remoteConnections = [];
+
+    hostConnection = null;
+
+    youtubePlayer = null;
+
+
+    document.getElementById(
+        "appContainer"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display = "flex";
+
+
+    document.getElementById(
+        "loginUsername"
+    ).focus();
+
+}
+
+
+/* =========================================================
+   START KARAOKE APP
+========================================================= */
+
+function startKaraokeApp() {
+
+    if (!isLoggedIn) {
+        return;
+    }
+
+
+    if (isRemote) {
+
+        startRemote();
+
+    } else {
+
+        startHost();
+
+    }
+
+}
 
 
 /* =========================================================
@@ -1477,7 +1683,10 @@ function renderRemoteQueue() {
 window.onYouTubeIframeAPIReady =
     function () {
 
-        if (!isRemote) {
+        if (
+            !isRemote &&
+            isLoggedIn
+        ) {
 
             createYouTubePlayer();
 

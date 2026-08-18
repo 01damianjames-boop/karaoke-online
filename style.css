@@ -22,15 +22,246 @@ button {
 
 
 /* =========================================================
-   HOST
+   LOGIN SCREEN
 ========================================================= */
 
-#hostApp {
+.login-screen {
+
     min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #191919 0%,
+            #080808 55%,
+            #030303 100%
+        );
 }
 
-.app {
+
+.login-box {
+
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: 40px 35px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #151515,
+            #090909
+        );
+
+    border: 1px solid #303030;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.7);
+
+}
+
+
+.login-logo {
+
+    width: 85px;
+
+    height: 85px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #1d1d1d;
+
+    border: 2px solid #333;
+
+    font-size: 42px;
+
+}
+
+
+.login-box h1 {
+
+    font-size: 28px;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 8px;
+
+}
+
+
+.login-subtitle {
+
+    color: #777;
+
+    font-size: 14px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 30px;
+
+}
+
+
+.login-form {
+
+    text-align: left;
+
+}
+
+
+.login-form label {
+
+    display: block;
+
+    color: #aaa;
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.login-form input {
+
+    width: 100%;
+
+    padding: 15px;
+
+    margin-bottom: 18px;
+
+    border-radius: 10px;
+
+    border: 1px solid #333;
+
+    outline: none;
+
+    background: #080808;
+
+    color: white;
+
+    font-size: 16px;
+
+}
+
+
+.login-form input:focus {
+
+    border-color: #20e020;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(32, 224, 32, 0.08);
+
+}
+
+
+.login-button {
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #20b820;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    margin-top: 5px;
+
+    transition: 0.15s;
+
+}
+
+
+.login-button:hover {
+
+    background: #27d027;
+
+}
+
+
+.login-button:active {
+
+    transform: scale(0.98);
+
+}
+
+
+.login-error {
+
+    min-height: 20px;
+
+    margin-top: 15px;
+
+    text-align: center;
+
+    color: #ff5555;
+
+    font-size: 13px;
+
+}
+
+
+.login-footer {
+
+    margin-top: 25px;
+
+    color: #555;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app-container {
+
+    display: none;
+
     min-height: 100vh;
+
+}
+
+
+.app {
+
+    min-height: 100vh;
+
 }
 
 
@@ -39,10 +270,13 @@ button {
 ========================================================= */
 
 header {
+
     height: 75px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     padding: 0 35px;
@@ -50,17 +284,64 @@ header {
     background: #111;
 
     border-bottom: 2px solid #292929;
+
 }
+
 
 .logo {
+
     font-size: 28px;
+
     font-weight: bold;
+
     letter-spacing: 2px;
+
 }
 
+
+.header-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
 .connection {
+
     font-size: 16px;
+
     color: #7cff7c;
+
+}
+
+
+.logout-button {
+
+    border: 1px solid #333;
+
+    border-radius: 8px;
+
+    padding: 8px 12px;
+
+    background: #1b1b1b;
+
+    color: #aaa;
+
+    font-size: 13px;
+
+}
+
+
+.logout-button:hover {
+
+    background: #2a2a2a;
+
+    color: white;
+
 }
 
 
@@ -69,6 +350,7 @@ header {
 ========================================================= */
 
 main {
+
     display: grid;
 
     grid-template-columns:
@@ -80,6 +362,7 @@ main {
     padding: 20px;
 
     min-height: calc(100vh - 120px);
+
 }
 
 
@@ -105,6 +388,7 @@ main {
     padding: 30px;
 
     display: flex;
+
     flex-direction: column;
 
     justify-content: space-between;
@@ -116,12 +400,16 @@ main {
         rgba(0, 0, 0, 0.8);
 
     overflow: hidden;
+
 }
 
 
 .song-info {
+
     margin-top: 5px;
+
 }
+
 
 .now-playing {
 
@@ -132,20 +420,25 @@ main {
     color: #888;
 
     margin-bottom: 10px;
+
 }
+
 
 .song-info h1 {
 
     font-size: 38px;
 
     margin-bottom: 6px;
+
 }
+
 
 .song-info p {
 
     color: #aaa;
 
     font-size: 18px;
+
 }
 
 
@@ -166,7 +459,9 @@ main {
     border-radius: 12px;
 
     background: #000;
+
 }
+
 
 .youtube-container iframe {
 
@@ -175,6 +470,7 @@ main {
     height: 100%;
 
     border: none;
+
 }
 
 
@@ -189,11 +485,14 @@ main {
     justify-content: center;
 
     gap: 18px;
+
 }
+
 
 .controls button {
 
     width: 60px;
+
     height: 60px;
 
     border: none;
@@ -205,19 +504,25 @@ main {
     color: white;
 
     font-size: 22px;
+
 }
+
 
 .controls button:hover {
 
     background: #333;
+
 }
+
 
 .controls .play {
 
     width: 75px;
+
     height: 75px;
 
     font-size: 28px;
+
 }
 
 
@@ -244,7 +549,9 @@ main {
     min-width: 0;
 
     overflow: hidden;
+
 }
+
 
 .remote-header {
 
@@ -255,12 +562,16 @@ main {
     align-items: center;
 
     margin-bottom: 15px;
+
 }
+
 
 .remote-header h2 {
 
     font-size: 25px;
+
 }
+
 
 .small-text {
 
@@ -269,6 +580,7 @@ main {
     font-size: 12px;
 
     margin-top: 4px;
+
 }
 
 
@@ -289,7 +601,9 @@ main {
     margin-bottom: 15px;
 
     text-align: center;
+
 }
+
 
 .room-title {
 
@@ -300,7 +614,9 @@ main {
     letter-spacing: 2px;
 
     margin-bottom: 5px;
+
 }
+
 
 .room-code {
 
@@ -311,7 +627,9 @@ main {
     letter-spacing: 4px;
 
     margin-bottom: 10px;
+
 }
+
 
 .qrcode {
 
@@ -322,7 +640,9 @@ main {
     min-height: 150px;
 
     margin: 8px 0;
+
 }
+
 
 .qrcode img {
 
@@ -331,7 +651,9 @@ main {
     padding: 5px;
 
     border-radius: 5px;
+
 }
+
 
 .remote-link {
 
@@ -342,7 +664,9 @@ main {
     word-break: break-all;
 
     margin: 8px 0;
+
 }
+
 
 .copy-room {
 
@@ -357,12 +681,16 @@ main {
     background: #222;
 
     color: white;
+
 }
+
 
 .copy-room:hover {
 
     background: #333;
+
 }
+
 
 .phone-status {
 
@@ -371,6 +699,7 @@ main {
     font-size: 12px;
 
     margin-top: 8px;
+
 }
 
 
@@ -395,11 +724,14 @@ main {
     font-size: 16px;
 
     outline: none;
+
 }
+
 
 #search:focus {
 
     border-color: #666;
+
 }
 
 
@@ -420,25 +752,32 @@ main {
     padding-right: 3px;
 
     min-height: 0;
+
 }
+
 
 .song-list::-webkit-scrollbar {
 
     width: 7px;
+
 }
+
 
 .song-list::-webkit-scrollbar-track {
 
     background: #0b0b0b;
 
     border-radius: 10px;
+
 }
+
 
 .song-list::-webkit-scrollbar-thumb {
 
     background: #333;
 
     border-radius: 10px;
+
 }
 
 
@@ -467,12 +806,16 @@ main {
     font-size: 16px;
 
     transition: 0.15s;
+
 }
+
 
 .song:hover {
 
     background: #252525;
+
 }
+
 
 .song span {
 
@@ -483,26 +826,35 @@ main {
     font-size: 13px;
 
     margin-top: 5px;
+
 }
+
 
 .song.playing {
 
     border: 2px solid #20e020;
+
 }
+
 
 .song.playing span {
 
     color: #8cff8c;
+
 }
+
 
 .song.reserved {
 
     border: 2px solid #e0a900;
+
 }
+
 
 .song.reserved span {
 
     color: #ffcc00;
+
 }
 
 
@@ -519,7 +871,9 @@ main {
     gap: 10px;
 
     margin-top: 15px;
+
 }
+
 
 .remote-buttons button {
 
@@ -534,11 +888,14 @@ main {
     color: white;
 
     font-size: 15px;
+
 }
+
 
 .remote-buttons button:hover {
 
     background: #333;
+
 }
 
 
@@ -563,6 +920,7 @@ footer {
     font-size: 12px;
 
     letter-spacing: 1px;
+
 }
 
 
@@ -577,30 +935,57 @@ footer {
     min-height: 100vh;
 
     background: #080808;
+
 }
+
 
 .phone-remote-app {
 
     width: 100%;
 
     min-height: 100vh;
+
 }
+
 
 .phone-header {
 
     height: 65px;
 
     padding: 0 18px;
+
 }
+
 
 .phone-header .logo {
 
     font-size: 19px;
+
 }
+
 
 .phone-header .connection {
 
     font-size: 12px;
+
+}
+
+
+.phone-header-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.phone-logout {
+
+    padding: 7px 9px;
+
 }
 
 
@@ -615,6 +1000,7 @@ footer {
     padding: 15px;
 
     min-height: calc(100vh - 65px);
+
 }
 
 
@@ -633,20 +1019,25 @@ footer {
     padding: 20px;
 
     text-align: center;
+
 }
+
 
 .phone-now-playing h1 {
 
     font-size: 25px;
 
     margin-bottom: 5px;
+
 }
+
 
 .phone-now-playing p {
 
     color: #888;
 
     font-size: 15px;
+
 }
 
 
@@ -671,11 +1062,14 @@ footer {
     font-size: 17px;
 
     outline: none;
+
 }
+
 
 #remoteSearch:focus {
 
     border-color: #666;
+
 }
 
 
@@ -692,7 +1086,9 @@ footer {
     min-height: 300px;
 
     max-height: 55vh;
+
 }
+
 
 .phone-song {
 
@@ -713,12 +1109,16 @@ footer {
     color: white;
 
     font-size: 16px;
+
 }
+
 
 .phone-song:active {
 
     transform: scale(0.98);
+
 }
+
 
 .phone-song span {
 
@@ -729,16 +1129,21 @@ footer {
     font-size: 12px;
 
     margin-top: 5px;
+
 }
+
 
 .phone-song.playing {
 
     border: 2px solid #20e020;
+
 }
+
 
 .phone-song.reserved {
 
     border: 2px solid #e0a900;
+
 }
 
 
@@ -755,7 +1160,9 @@ footer {
     border-radius: 12px;
 
     padding: 15px;
+
 }
+
 
 .queue-title {
 
@@ -766,7 +1173,9 @@ footer {
     letter-spacing: 2px;
 
     margin-bottom: 10px;
+
 }
+
 
 .queue-item {
 
@@ -781,21 +1190,28 @@ footer {
     padding: 10px 0;
 
     border-bottom: 1px solid #222;
+
 }
+
 
 .queue-item strong {
 
     color: #ffcc00;
+
 }
+
 
 .queue-item span {
 
     font-size: 14px;
+
 }
+
 
 .queue-item button {
 
     width: 30px;
+
     height: 30px;
 
     border: none;
@@ -805,6 +1221,7 @@ footer {
     background: #222;
 
     color: white;
+
 }
 
 
@@ -824,7 +1241,9 @@ footer {
     position: sticky;
 
     bottom: 0;
+
 }
+
 
 .phone-controls button {
 
@@ -839,18 +1258,23 @@ footer {
     color: white;
 
     font-size: 20px;
+
 }
+
 
 .phone-controls button:active {
 
     background: #444;
 
     transform: scale(0.97);
+
 }
+
 
 .phone-controls .phone-play {
 
     font-size: 17px;
+
 }
 
 
@@ -968,6 +1392,32 @@ footer {
     .phone-song-list {
 
         max-height: 48vh;
+
+    }
+
+    .login-box {
+
+        padding: 32px 22px;
+
+    }
+
+    .login-box h1 {
+
+        font-size: 23px;
+
+    }
+
+    .header-right {
+
+        gap: 7px;
+
+    }
+
+    .header-right .logout-button {
+
+        font-size: 11px;
+
+        padding: 7px 8px;
 
     }
 
