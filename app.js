@@ -6,7 +6,6 @@
 
 /* =========================================================
    LOGIN SETTINGS
-   CHANGE THESE TWO VALUES IF YOU WANT
 ========================================================= */
 
 const LOGIN_USERNAME = "admin";
@@ -101,7 +100,7 @@ let remoteConnections = [];
 
 
 /* =========================================================
-   LOGIN
+   DOM READY
 ========================================================= */
 
 document.addEventListener(
@@ -115,7 +114,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   SHOW LOGIN
+   SHOW LOGIN / APP
 ========================================================= */
 
 function showLoginScreen() {
@@ -126,12 +125,20 @@ function showLoginScreen() {
     const app =
         document.getElementById("appContainer");
 
+
     if (!loginScreen || !app) {
         return;
     }
 
 
     if (isLoggedIn) {
+
+        /*
+         * IMPORTANT:
+         * Explicit inline display handling.
+         * This prevents GitHub Pages from showing
+         * login and app at the same time.
+         */
 
         loginScreen.style.display = "none";
 
@@ -151,25 +158,37 @@ function showLoginScreen() {
 
 
 /* =========================================================
-   LOGIN FUNCTION
+   LOGIN
 ========================================================= */
 
 function login() {
 
-    const username =
-        document
-            .getElementById("loginUsername")
-            .value
-            .trim();
+    const usernameInput =
+        document.getElementById(
+            "loginUsername"
+        );
 
-    const password =
-        document
-            .getElementById("loginPassword")
-            .value;
-
+    const passwordInput =
+        document.getElementById(
+            "loginPassword"
+        );
 
     const error =
-        document.getElementById("loginError");
+        document.getElementById(
+            "loginError"
+        );
+
+
+    if (!usernameInput || !passwordInput) {
+        return;
+    }
+
+
+    const username =
+        usernameInput.value.trim();
+
+    const password =
+        passwordInput.value;
 
 
     if (
@@ -184,26 +203,31 @@ function login() {
 
         isLoggedIn = true;
 
-        error.textContent = "";
 
-        document.getElementById(
-            "loginUsername"
-        ).value = "";
+        if (error) {
+            error.textContent = "";
+        }
 
-        document.getElementById(
-            "loginPassword"
-        ).value = "";
+
+        usernameInput.value = "";
+        passwordInput.value = "";
+
 
         showLoginScreen();
 
     } else {
 
-        error.textContent =
-            "❌ Incorrect username or password.";
+        if (error) {
 
-        document
-            .getElementById("loginPassword")
-            .value = "";
+            error.textContent =
+                "❌ Incorrect username or password.";
+
+        }
+
+
+        passwordInput.value = "";
+
+        passwordInput.focus();
 
     }
 
@@ -219,6 +243,8 @@ function handleLoginKey(event) {
     if (
         event.key === "Enter"
     ) {
+
+        event.preventDefault();
 
         login();
 
@@ -237,6 +263,7 @@ function logout() {
         confirm(
             "Are you sure you want to logout?"
         );
+
 
     if (!confirmLogout) {
         return;
@@ -270,19 +297,36 @@ function logout() {
     youtubePlayer = null;
 
 
-    document.getElementById(
-        "appContainer"
-    ).style.display = "none";
+    const app =
+        document.getElementById(
+            "appContainer"
+        );
+
+    const loginScreen =
+        document.getElementById(
+            "loginScreen"
+        );
 
 
-    document.getElementById(
-        "loginScreen"
-    ).style.display = "flex";
+    if (app) {
+        app.style.display = "none";
+    }
 
 
-    document.getElementById(
-        "loginUsername"
-    ).focus();
+    if (loginScreen) {
+        loginScreen.style.display = "flex";
+    }
+
+
+    const username =
+        document.getElementById(
+            "loginUsername"
+        );
+
+
+    if (username) {
+        username.focus();
+    }
 
 }
 
@@ -317,11 +361,26 @@ function startKaraokeApp() {
 
 function startHost() {
 
-    document.getElementById("hostApp").style.display =
-        "block";
+    const host =
+        document.getElementById(
+            "hostApp"
+        );
 
-    document.getElementById("remoteApp").style.display =
-        "none";
+    const remote =
+        document.getElementById(
+            "remoteApp"
+        );
+
+
+    if (host) {
+        host.style.display = "block";
+    }
+
+
+    if (remote) {
+        remote.style.display = "none";
+    }
+
 
     startHostPeer();
 
@@ -336,11 +395,26 @@ function startHost() {
 
 function startRemote() {
 
-    document.getElementById("hostApp").style.display =
-        "none";
+    const host =
+        document.getElementById(
+            "hostApp"
+        );
 
-    document.getElementById("remoteApp").style.display =
-        "block";
+    const remote =
+        document.getElementById(
+            "remoteApp"
+        );
+
+
+    if (host) {
+        host.style.display = "none";
+    }
+
+
+    if (remote) {
+        remote.style.display = "block";
+    }
+
 
     startRemotePeer();
 
@@ -353,7 +427,24 @@ function startRemote() {
 
 function startHostPeer() {
 
+    if (typeof Peer === "undefined") {
+
+        const status =
+            document.getElementById(
+                "connectionStatus"
+            );
+
+        if (status) {
+            status.textContent =
+                "🔴 PeerJS unavailable";
+        }
+
+        return;
+    }
+
+
     peer = new Peer();
+
 
     peer.on(
         "open",
@@ -364,10 +455,19 @@ function startHostPeer() {
                     Math.max(0, id.length - 8)
                 );
 
-            document.getElementById(
-                "roomCode"
-            ).textContent =
-                code.toUpperCase();
+
+            const roomCode =
+                document.getElementById(
+                    "roomCode"
+                );
+
+
+            if (roomCode) {
+
+                roomCode.textContent =
+                    code.toUpperCase();
+
+            }
 
 
             const remoteUrl =
@@ -377,19 +477,35 @@ function startHostPeer() {
                 encodeURIComponent(id);
 
 
-            document.getElementById(
-                "remoteLink"
-            ).textContent =
-                remoteUrl;
+            const remoteLink =
+                document.getElementById(
+                    "remoteLink"
+                );
+
+
+            if (remoteLink) {
+
+                remoteLink.textContent =
+                    remoteUrl;
+
+            }
 
 
             generateQRCode(remoteUrl);
 
 
-            document.getElementById(
-                "connectionStatus"
-            ).textContent =
-                "🟢 Room Ready";
+            const status =
+                document.getElementById(
+                    "connectionStatus"
+                );
+
+
+            if (status) {
+
+                status.textContent =
+                    "🟢 Room Ready";
+
+            }
 
         }
     );
@@ -399,19 +515,32 @@ function startHostPeer() {
         "connection",
         function (connection) {
 
-            remoteConnections.push(connection);
+            remoteConnections.push(
+                connection
+            );
 
-            document.getElementById(
-                "phoneStatus"
-            ).textContent =
-                "📱 Phone Connected";
+
+            const phoneStatus =
+                document.getElementById(
+                    "phoneStatus"
+                );
+
+
+            if (phoneStatus) {
+
+                phoneStatus.textContent =
+                    "📱 Phone Connected";
+
+            }
 
 
             connection.on(
                 "open",
                 function () {
 
-                    sendState(connection);
+                    sendState(
+                        connection
+                    );
 
                 }
             );
@@ -438,14 +567,17 @@ function startHostPeer() {
                             c => c !== connection
                         );
 
+
                     if (
                         remoteConnections.length === 0
                     ) {
 
-                        document.getElementById(
-                            "phoneStatus"
-                        ).textContent =
-                            "📱 No phone connected";
+                        if (phoneStatus) {
+
+                            phoneStatus.textContent =
+                                "📱 No phone connected";
+
+                        }
 
                     }
 
@@ -465,10 +597,19 @@ function startHostPeer() {
                 error
             );
 
-            document.getElementById(
-                "connectionStatus"
-            ).textContent =
-                "🔴 Connection Error";
+
+            const status =
+                document.getElementById(
+                    "connectionStatus"
+                );
+
+
+            if (status) {
+
+                status.textContent =
+                    "🔴 Connection Error";
+
+            }
 
         }
     );
@@ -481,6 +622,24 @@ function startHostPeer() {
 ========================================================= */
 
 function startRemotePeer() {
+
+    if (typeof Peer === "undefined") {
+
+        const status =
+            document.getElementById(
+                "remoteConnectionStatus"
+            );
+
+        if (status) {
+
+            status.textContent =
+                "🔴 PeerJS unavailable";
+
+        }
+
+        return;
+    }
+
 
     peer = new Peer();
 
@@ -499,10 +658,18 @@ function startRemotePeer() {
                 "open",
                 function () {
 
-                    document.getElementById(
-                        "remoteConnectionStatus"
-                    ).textContent =
-                        "🟢 Connected";
+                    const status =
+                        document.getElementById(
+                            "remoteConnectionStatus"
+                        );
+
+
+                    if (status) {
+
+                        status.textContent =
+                            "🟢 Connected";
+
+                    }
 
                 }
             );
@@ -524,10 +691,18 @@ function startRemotePeer() {
                 "close",
                 function () {
 
-                    document.getElementById(
-                        "remoteConnectionStatus"
-                    ).textContent =
-                        "🔴 Disconnected";
+                    const status =
+                        document.getElementById(
+                            "remoteConnectionStatus"
+                        );
+
+
+                    if (status) {
+
+                        status.textContent =
+                            "🔴 Disconnected";
+
+                    }
 
                 }
             );
@@ -537,10 +712,18 @@ function startRemotePeer() {
                 "error",
                 function () {
 
-                    document.getElementById(
-                        "remoteConnectionStatus"
-                    ).textContent =
-                        "🔴 Connection Error";
+                    const status =
+                        document.getElementById(
+                            "remoteConnectionStatus"
+                        );
+
+
+                    if (status) {
+
+                        status.textContent =
+                            "🔴 Connection Error";
+
+                    }
 
                 }
             );
@@ -558,10 +741,19 @@ function startRemotePeer() {
                 error
             );
 
-            document.getElementById(
-                "remoteConnectionStatus"
-            ).textContent =
-                "🔴 Connection Failed";
+
+            const status =
+                document.getElementById(
+                    "remoteConnectionStatus"
+                );
+
+
+            if (status) {
+
+                status.textContent =
+                    "🔴 Connection Failed";
+
+            }
 
         }
     );
@@ -570,7 +762,7 @@ function startRemotePeer() {
 
 
 /* =========================================================
-   GENERATE QR
+   QR CODE
 ========================================================= */
 
 function generateQRCode(url) {
@@ -580,7 +772,14 @@ function generateQRCode(url) {
             "qrcode"
         );
 
+
+    if (!qr) {
+        return;
+    }
+
+
     qr.innerHTML = "";
+
 
     if (
         typeof QRCode !== "undefined"
@@ -606,10 +805,19 @@ function generateQRCode(url) {
 
 function copyRemoteLink() {
 
-    const link =
+    const element =
         document.getElementById(
             "remoteLink"
-        ).textContent;
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    const link =
+        element.textContent;
 
 
     if (
@@ -622,23 +830,96 @@ function copyRemoteLink() {
     }
 
 
-    navigator.clipboard
-        .writeText(link)
-        .then(
-            function () {
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
 
-                alert(
-                    "📱 Remote link copied!"
-                );
+        navigator.clipboard
+            .writeText(link)
+            .then(
+                function () {
 
-            }
-        );
+                    alert(
+                        "📱 Remote link copied!"
+                    );
+
+                }
+            )
+            .catch(
+                function () {
+
+                    fallbackCopy(link);
+
+                }
+            );
+
+    } else {
+
+        fallbackCopy(link);
+
+    }
 
 }
 
 
 /* =========================================================
-   SEND STATE TO ONE REMOTE
+   FALLBACK COPY
+========================================================= */
+
+function fallbackCopy(text) {
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+
+    textarea.value = text;
+
+    textarea.style.position =
+        "fixed";
+
+    textarea.style.left =
+        "-9999px";
+
+
+    document.body.appendChild(
+        textarea
+    );
+
+
+    textarea.select();
+
+
+    try {
+
+        document.execCommand(
+            "copy"
+        );
+
+        alert(
+            "📱 Remote link copied!"
+        );
+
+    } catch (error) {
+
+        alert(
+            "Please copy the remote link manually."
+        );
+
+    }
+
+
+    document.body.removeChild(
+        textarea
+    );
+
+}
+
+
+/* =========================================================
+   SEND STATE
 ========================================================= */
 
 function sendState(connection) {
@@ -793,16 +1074,28 @@ function handleHostState(data) {
     }
 
 
-    document.getElementById(
-        "remoteSongTitle"
-    ).textContent =
-        song.title;
+    const title =
+        document.getElementById(
+            "remoteSongTitle"
+        );
 
 
-    document.getElementById(
-        "remoteArtist"
-    ).textContent =
-        song.artist;
+    const artist =
+        document.getElementById(
+            "remoteArtist"
+        );
+
+
+    if (title) {
+        title.textContent =
+            song.title;
+    }
+
+
+    if (artist) {
+        artist.textContent =
+            song.artist;
+    }
 
 
     renderRemoteSongs();
@@ -912,23 +1205,40 @@ function loadSong(index) {
     }
 
 
-    currentSong = index;
+    currentSong =
+        index;
 
 
     const song =
         songs[currentSong];
 
 
-    document.getElementById(
-        "songTitle"
-    ).textContent =
-        song.title;
+    const title =
+        document.getElementById(
+            "songTitle"
+        );
 
 
-    document.getElementById(
-        "artist"
-    ).textContent =
-        song.artist;
+    const artist =
+        document.getElementById(
+            "artist"
+        );
+
+
+    if (title) {
+
+        title.textContent =
+            song.title;
+
+    }
+
+
+    if (artist) {
+
+        artist.textContent =
+            song.artist;
+
+    }
 
 
     renderSongs();
@@ -959,7 +1269,7 @@ function loadSong(index) {
 
 
 /* =========================================================
-   YOUTUBE PLAYER READY
+   YOUTUBE READY
 ========================================================= */
 
 function onYouTubePlayerReady(event) {
@@ -970,6 +1280,7 @@ function onYouTubePlayerReady(event) {
 
         const index =
             pendingSongIndex;
+
 
         pendingSongIndex =
             null;
@@ -982,7 +1293,6 @@ function onYouTubePlayerReady(event) {
         event.target.loadVideoById(
             song.youtube
         );
-
 
     } else {
 
@@ -1009,6 +1319,13 @@ function onYouTubePlayerReady(event) {
 ========================================================= */
 
 function onYouTubePlayerStateChange(event) {
+
+    if (
+        typeof YT === "undefined"
+    ) {
+        return;
+    }
+
 
     if (
         event.data ===
@@ -1063,6 +1380,26 @@ function onYouTubePlayerStateChange(event) {
 ========================================================= */
 
 function createYouTubePlayer() {
+
+    if (
+        typeof YT === "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    const playerElement =
+        document.getElementById(
+            "youtubePlayer"
+        );
+
+
+    if (!playerElement) {
+        return;
+    }
+
 
     youtubePlayer =
         new YT.Player(
@@ -1157,6 +1494,15 @@ function togglePlay() {
     }
 
 
+    if (
+        typeof YT === "undefined"
+    ) {
+
+        return;
+
+    }
+
+
     const state =
         youtubePlayer.getPlayerState();
 
@@ -1167,7 +1513,6 @@ function togglePlay() {
     ) {
 
         youtubePlayer.pauseVideo();
-
 
     } else {
 
@@ -1240,13 +1585,21 @@ function removeReserve(index) {
 
 function searchSongs() {
 
+    const input =
+        document.getElementById(
+            "search"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
     const search =
-        document
-            .getElementById(
-                "search"
-            )
-            .value
-            .toLowerCase();
+        input.value
+            .toLowerCase()
+            .trim();
 
 
     renderSongs(
@@ -1306,6 +1659,10 @@ function renderSongs(
                 );
 
 
+            button.type =
+                "button";
+
+
             button.className =
                 "song";
 
@@ -1340,7 +1697,6 @@ function renderSongs(
                         );
 
                     };
-
 
             }
 
@@ -1383,7 +1739,6 @@ function renderSongs(
                         );
 
                     };
-
 
             }
 
@@ -1431,13 +1786,21 @@ function renderSongs(
 
 function searchRemoteSongs() {
 
+    const input =
+        document.getElementById(
+            "remoteSearch"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
     const search =
-        document
-            .getElementById(
-                "remoteSearch"
-            )
-            .value
-            .toLowerCase();
+        input.value
+            .toLowerCase()
+            .trim();
 
 
     renderRemoteSongs(
@@ -1497,6 +1860,10 @@ function renderRemoteSongs(
                 );
 
 
+            button.type =
+                "button";
+
+
             button.className =
                 "phone-song";
 
@@ -1519,7 +1886,6 @@ function renderRemoteSongs(
                     </span>
 
                 `;
-
 
             }
 
@@ -1638,6 +2004,11 @@ function renderRemoteQueue() {
                 songs[index];
 
 
+            if (!song) {
+                return;
+            }
+
+
             const item =
                 document.createElement(
                     "div"
@@ -1659,8 +2030,11 @@ function renderRemoteQueue() {
                 </span>
 
                 <button
+                    type="button"
                     onclick="remoteRemoveReserve(${index})">
+
                     ✕
+
                 </button>
 
             `;
