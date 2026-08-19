@@ -22,7 +22,7 @@ button {
 
 
 /* =========================================================
-   LOGIN SCREEN
+   LOGIN
 ========================================================= */
 
 .login-screen {
@@ -45,7 +45,6 @@ button {
             #030303 100%
         );
 }
-
 
 .login-box {
 
@@ -71,14 +70,11 @@ button {
     box-shadow:
         0 20px 60px
         rgba(0, 0, 0, 0.7);
-
 }
-
 
 .login-logo {
 
     width: 85px;
-
     height: 85px;
 
     margin: 0 auto 20px;
@@ -86,7 +82,6 @@ button {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
@@ -96,9 +91,7 @@ button {
     border: 2px solid #333;
 
     font-size: 42px;
-
 }
-
 
 .login-box h1 {
 
@@ -107,9 +100,7 @@ button {
     letter-spacing: 2px;
 
     margin-bottom: 8px;
-
 }
-
 
 .login-subtitle {
 
@@ -120,16 +111,11 @@ button {
     letter-spacing: 3px;
 
     margin-bottom: 30px;
-
 }
-
 
 .login-form {
-
     text-align: left;
-
 }
-
 
 .login-form label {
 
@@ -140,9 +126,7 @@ button {
     font-size: 13px;
 
     margin-bottom: 7px;
-
 }
-
 
 .login-form input {
 
@@ -163,9 +147,7 @@ button {
     color: white;
 
     font-size: 16px;
-
 }
-
 
 .login-form input:focus {
 
@@ -174,9 +156,7 @@ button {
     box-shadow:
         0 0 0 2px
         rgba(32, 224, 32, 0.08);
-
 }
-
 
 .login-button {
 
@@ -199,23 +179,15 @@ button {
     margin-top: 5px;
 
     transition: 0.15s;
-
 }
-
 
 .login-button:hover {
-
     background: #27d027;
-
 }
-
 
 .login-button:active {
-
     transform: scale(0.98);
-
 }
-
 
 .login-error {
 
@@ -228,9 +200,7 @@ button {
     color: #ff5555;
 
     font-size: 13px;
-
 }
-
 
 .login-footer {
 
@@ -241,7 +211,6 @@ button {
     font-size: 11px;
 
     letter-spacing: 1px;
-
 }
 
 
@@ -254,14 +223,10 @@ button {
     display: none;
 
     min-height: 100vh;
-
 }
 
-
 .app {
-
     min-height: 100vh;
-
 }
 
 
@@ -284,9 +249,7 @@ header {
     background: #111;
 
     border-bottom: 2px solid #292929;
-
 }
-
 
 .logo {
 
@@ -295,9 +258,7 @@ header {
     font-weight: bold;
 
     letter-spacing: 2px;
-
 }
-
 
 .header-right {
 
@@ -306,18 +267,14 @@ header {
     align-items: center;
 
     gap: 15px;
-
 }
-
 
 .connection {
 
     font-size: 16px;
 
     color: #7cff7c;
-
 }
-
 
 .logout-button {
 
@@ -332,16 +289,13 @@ header {
     color: #aaa;
 
     font-size: 13px;
-
 }
-
 
 .logout-button:hover {
 
     background: #2a2a2a;
 
     color: white;
-
 }
 
 
@@ -355,14 +309,13 @@ main {
 
     grid-template-columns:
         minmax(0, 2fr)
-        minmax(320px, 1fr);
+        minmax(340px, 1fr);
 
     gap: 20px;
 
     padding: 20px;
 
     min-height: calc(100vh - 120px);
-
 }
 
 
@@ -400,16 +353,11 @@ main {
         rgba(0, 0, 0, 0.8);
 
     overflow: hidden;
-
 }
-
 
 .song-info {
-
     margin-top: 5px;
-
 }
-
 
 .now-playing {
 
@@ -420,25 +368,20 @@ main {
     color: #888;
 
     margin-bottom: 10px;
-
 }
-
 
 .song-info h1 {
 
     font-size: 38px;
 
     margin-bottom: 6px;
-
 }
-
 
 .song-info p {
 
     color: #aaa;
 
     font-size: 18px;
-
 }
 
 
@@ -459,9 +402,7 @@ main {
     border-radius: 12px;
 
     background: #000;
-
 }
-
 
 .youtube-container iframe {
 
@@ -470,7 +411,6 @@ main {
     height: 100%;
 
     border: none;
-
 }
 
 
@@ -485,14 +425,11 @@ main {
     justify-content: center;
 
     gap: 18px;
-
 }
-
 
 .controls button {
 
     width: 60px;
-
     height: 60px;
 
     border: none;
@@ -504,30 +441,23 @@ main {
     color: white;
 
     font-size: 22px;
-
 }
-
 
 .controls button:hover {
-
     background: #333;
-
 }
-
 
 .controls .play {
 
     width: 75px;
-
     height: 75px;
 
     font-size: 28px;
-
 }
 
 
 /* =========================================================
-   REMOTE PANEL
+   CONTROL 1 / MENU
 ========================================================= */
 
 .remote {
@@ -549,9 +479,7 @@ main {
     min-width: 0;
 
     overflow: hidden;
-
 }
-
 
 .remote-header {
 
@@ -562,16 +490,11 @@ main {
     align-items: center;
 
     margin-bottom: 15px;
-
 }
-
 
 .remote-header h2 {
-
     font-size: 25px;
-
 }
-
 
 .small-text {
 
@@ -580,12 +503,24 @@ main {
     font-size: 12px;
 
     margin-top: 4px;
+}
 
+.menu-title {
+
+    color: #aaa;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    margin: 8px 0;
 }
 
 
 /* =========================================================
-   ROOM BOX
+   ROOM
 ========================================================= */
 
 .room-box {
@@ -598,12 +533,10 @@ main {
 
     padding: 14px;
 
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 
     text-align: center;
-
 }
-
 
 .room-title {
 
@@ -614,9 +547,7 @@ main {
     letter-spacing: 2px;
 
     margin-bottom: 5px;
-
 }
-
 
 .room-code {
 
@@ -627,9 +558,7 @@ main {
     letter-spacing: 4px;
 
     margin-bottom: 10px;
-
 }
-
 
 .qrcode {
 
@@ -640,9 +569,7 @@ main {
     min-height: 150px;
 
     margin: 8px 0;
-
 }
-
 
 .qrcode img {
 
@@ -651,9 +578,7 @@ main {
     padding: 5px;
 
     border-radius: 5px;
-
 }
-
 
 .remote-link {
 
@@ -664,9 +589,7 @@ main {
     word-break: break-all;
 
     margin: 8px 0;
-
 }
-
 
 .copy-room {
 
@@ -681,16 +604,11 @@ main {
     background: #222;
 
     color: white;
-
 }
-
 
 .copy-room:hover {
-
     background: #333;
-
 }
-
 
 .phone-status {
 
@@ -699,7 +617,6 @@ main {
     font-size: 12px;
 
     margin-top: 8px;
-
 }
 
 
@@ -724,14 +641,10 @@ main {
     font-size: 16px;
 
     outline: none;
-
 }
 
-
 #search:focus {
-
     border-color: #666;
-
 }
 
 
@@ -747,37 +660,29 @@ main {
 
     overflow-x: hidden;
 
-    margin-top: 15px;
+    margin-top: 12px;
 
     padding-right: 3px;
 
     min-height: 0;
-
 }
-
 
 .song-list::-webkit-scrollbar {
-
     width: 7px;
-
 }
-
 
 .song-list::-webkit-scrollbar-track {
 
     background: #0b0b0b;
 
     border-radius: 10px;
-
 }
-
 
 .song-list::-webkit-scrollbar-thumb {
 
     background: #333;
 
     border-radius: 10px;
-
 }
 
 
@@ -806,16 +711,11 @@ main {
     font-size: 16px;
 
     transition: 0.15s;
-
 }
-
 
 .song:hover {
-
     background: #252525;
-
 }
-
 
 .song span {
 
@@ -826,35 +726,38 @@ main {
     font-size: 13px;
 
     margin-top: 5px;
-
 }
-
 
 .song.playing {
 
     border: 2px solid #20e020;
 
+    background:
+        linear-gradient(
+            90deg,
+            #142014,
+            #181818
+        );
 }
-
 
 .song.playing span {
-
     color: #8cff8c;
-
 }
-
 
 .song.reserved {
 
     border: 2px solid #e0a900;
 
+    background:
+        linear-gradient(
+            90deg,
+            #241e08,
+            #181818
+        );
 }
 
-
 .song.reserved span {
-
     color: #ffcc00;
-
 }
 
 
@@ -870,10 +773,8 @@ main {
 
     gap: 10px;
 
-    margin-top: 15px;
-
+    margin-top: 12px;
 }
-
 
 .remote-buttons button {
 
@@ -888,14 +789,10 @@ main {
     color: white;
 
     font-size: 15px;
-
 }
 
-
 .remote-buttons button:hover {
-
     background: #333;
-
 }
 
 
@@ -920,7 +817,6 @@ footer {
     font-size: 12px;
 
     letter-spacing: 1px;
-
 }
 
 
@@ -935,41 +831,29 @@ footer {
     min-height: 100vh;
 
     background: #080808;
-
 }
-
 
 .phone-remote-app {
 
     width: 100%;
 
     min-height: 100vh;
-
 }
-
 
 .phone-header {
 
     height: 65px;
 
     padding: 0 18px;
-
 }
-
 
 .phone-header .logo {
-
     font-size: 19px;
-
 }
-
 
 .phone-header .connection {
-
     font-size: 12px;
-
 }
-
 
 .phone-header-right {
 
@@ -978,16 +862,11 @@ footer {
     align-items: center;
 
     gap: 10px;
-
 }
-
 
 .phone-logout {
-
     padding: 7px 9px;
-
 }
-
 
 .phone-main {
 
@@ -1000,7 +879,6 @@ footer {
     padding: 15px;
 
     min-height: calc(100vh - 65px);
-
 }
 
 
@@ -1019,25 +897,20 @@ footer {
     padding: 20px;
 
     text-align: center;
-
 }
-
 
 .phone-now-playing h1 {
 
     font-size: 25px;
 
     margin-bottom: 5px;
-
 }
-
 
 .phone-now-playing p {
 
     color: #888;
 
     font-size: 15px;
-
 }
 
 
@@ -1062,14 +935,39 @@ footer {
     font-size: 17px;
 
     outline: none;
+}
 
+#remoteSearch:focus {
+    border-color: #666;
 }
 
 
-#remoteSearch:focus {
+/* =========================================================
+   PHONE MENU
+========================================================= */
 
-    border-color: #666;
+.phone-menu {
 
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    padding: 12px;
+}
+
+.phone-menu-title {
+
+    color: #aaa;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    padding: 5px 3px 10px;
 }
 
 
@@ -1079,16 +977,12 @@ footer {
 
 .phone-song-list {
 
-    flex: 1;
-
     overflow-y: auto;
 
-    min-height: 300px;
+    min-height: 250px;
 
-    max-height: 55vh;
-
+    max-height: 48vh;
 }
-
 
 .phone-song {
 
@@ -1109,16 +1003,16 @@ footer {
     color: white;
 
     font-size: 16px;
-
 }
 
+.phone-song:last-child {
+    margin-bottom: 0;
+}
 
 .phone-song:active {
 
     transform: scale(0.98);
-
 }
-
 
 .phone-song span {
 
@@ -1129,21 +1023,38 @@ footer {
     font-size: 12px;
 
     margin-top: 5px;
-
 }
-
 
 .phone-song.playing {
 
     border: 2px solid #20e020;
 
+    background:
+        linear-gradient(
+            90deg,
+            #142014,
+            #151515
+        );
 }
 
+.phone-song.playing span {
+    color: #8cff8c;
+}
 
 .phone-song.reserved {
 
     border: 2px solid #e0a900;
 
+    background:
+        linear-gradient(
+            90deg,
+            #241e08,
+            #151515
+        );
+}
+
+.phone-song.reserved span {
+    color: #ffcc00;
 }
 
 
@@ -1160,9 +1071,7 @@ footer {
     border-radius: 12px;
 
     padding: 15px;
-
 }
-
 
 .queue-title {
 
@@ -1173,15 +1082,16 @@ footer {
     letter-spacing: 2px;
 
     margin-bottom: 10px;
-
 }
-
 
 .queue-item {
 
     display: grid;
 
-    grid-template-columns: 35px 1fr 35px;
+    grid-template-columns:
+        35px
+        1fr
+        35px;
 
     align-items: center;
 
@@ -1190,28 +1100,23 @@ footer {
     padding: 10px 0;
 
     border-bottom: 1px solid #222;
-
 }
 
+.queue-item:last-child {
+    border-bottom: none;
+}
 
 .queue-item strong {
-
     color: #ffcc00;
-
 }
-
 
 .queue-item span {
-
     font-size: 14px;
-
 }
-
 
 .queue-item button {
 
     width: 30px;
-
     height: 30px;
 
     border: none;
@@ -1221,7 +1126,6 @@ footer {
     background: #222;
 
     color: white;
-
 }
 
 
@@ -1234,7 +1138,7 @@ footer {
     display: grid;
 
     grid-template-columns:
-        1fr 1.3fr 1fr;
+        1fr 1.5fr 1fr;
 
     gap: 10px;
 
@@ -1242,8 +1146,10 @@ footer {
 
     bottom: 0;
 
-}
+    background: #080808;
 
+    padding-top: 5px;
+}
 
 .phone-controls button {
 
@@ -1258,23 +1164,17 @@ footer {
     color: white;
 
     font-size: 20px;
-
 }
-
 
 .phone-controls button:active {
 
     background: #444;
 
     transform: scale(0.97);
-
 }
 
-
 .phone-controls .phone-play {
-
-    font-size: 17px;
-
+    font-size: 14px;
 }
 
 
@@ -1289,21 +1189,15 @@ footer {
         grid-template-columns:
             minmax(0, 1.7fr)
             minmax(300px, 1fr);
-
     }
 
     .youtube-container {
-
         height: 350px;
-
     }
 
     .song-info h1 {
-
         font-size: 32px;
-
     }
-
 }
 
 
@@ -1316,27 +1210,19 @@ footer {
     #hostApp main {
 
         grid-template-columns: 1fr;
-
     }
 
     #hostApp .screen {
-
         min-height: 500px;
-
     }
 
     #hostApp .remote {
-
         min-height: 500px;
-
     }
 
     #hostApp .youtube-container {
-
         height: 300px;
-
     }
-
 }
 
 
@@ -1347,78 +1233,52 @@ footer {
 @media (max-width: 600px) {
 
     #hostApp header {
-
         padding: 0 18px;
-
     }
 
     #hostApp .logo {
-
         font-size: 20px;
-
     }
 
     #hostApp .connection {
-
         font-size: 12px;
-
     }
 
     #hostApp main {
-
         padding: 10px;
-
     }
 
     #hostApp .screen,
     #hostApp .remote {
-
         padding: 20px;
-
     }
 
     #hostApp .youtube-container {
-
         height: 230px;
-
     }
 
     .phone-main {
-
         padding: 10px;
-
     }
 
     .phone-song-list {
-
-        max-height: 48vh;
-
+        max-height: 45vh;
     }
 
     .login-box {
-
         padding: 32px 22px;
-
     }
 
     .login-box h1 {
-
         font-size: 23px;
-
     }
 
     .header-right {
-
         gap: 7px;
-
     }
 
     .header-right .logout-button {
-
         font-size: 11px;
-
         padding: 7px 8px;
-
     }
-
 }

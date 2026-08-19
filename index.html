@@ -21,7 +21,7 @@
 
 
 <!-- =====================================================
-     LOGIN SCREEN
+     LOGIN
 ====================================================== -->
 
 <div
@@ -42,7 +42,6 @@
             Private Access
         </p>
 
-
         <div class="login-form">
 
             <label>
@@ -57,7 +56,6 @@
                 onkeydown="handleLoginKey(event)"
             >
 
-
             <label>
                 Password
             </label>
@@ -70,7 +68,6 @@
                 onkeydown="handleLoginKey(event)"
             >
 
-
             <button
                 class="login-button"
                 onclick="login()">
@@ -79,14 +76,12 @@
 
             </button>
 
-
             <div
                 id="loginError"
                 class="login-error">
             </div>
 
         </div>
-
 
         <div class="login-footer">
             🔒 Authorized access only
@@ -98,19 +93,18 @@
 
 
 <!-- =====================================================
-     MAIN APP CONTAINER
+     APP
 ====================================================== -->
 
 <div
     id="appContainer"
     class="app-container">
 
-
     <div class="app">
 
 
         <!-- =================================================
-             HOST / CONTROL 1
+             CONTROL 1
         ================================================== -->
 
         <div id="hostApp">
@@ -147,9 +141,9 @@
             <main>
 
 
-                <!-- =========================
-                     MAIN KARAOKE SCREEN
-                ========================== -->
+                <!-- =========================================
+                     TV / PLAYER
+                ========================================== -->
 
                 <section class="screen">
 
@@ -160,29 +154,24 @@
                         </div>
 
                         <h1 id="songTitle">
-                            No Song Selected
+                            No Song Playing
                         </h1>
 
                         <p id="artist">
-                            Choose a song from the remote
+                            Reserve a song from the menu
                         </p>
 
                     </div>
 
 
-                    <!-- YOUTUBE PLAYER -->
-
                     <div class="youtube-container">
 
                         <div
-                            id="youtubePlayer"
-                            style="width:100%; height:100%;">
+                            id="youtubePlayer">
                         </div>
 
                     </div>
 
-
-                    <!-- MAIN CONTROLS -->
 
                     <div class="controls">
 
@@ -213,9 +202,9 @@
                 </section>
 
 
-                <!-- =========================
-                     CONTROL 1 REMOTE / QUEUE
-                ========================== -->
+                <!-- =========================================
+                     MENU / CONTROL 1
+                ========================================== -->
 
                 <section class="remote">
 
@@ -236,7 +225,7 @@
                     </div>
 
 
-                    <!-- ROOM -->
+                    <!-- PHONE CONNECTION -->
 
                     <div class="room-box">
 
@@ -284,7 +273,11 @@
                     </div>
 
 
-                    <!-- SEARCH -->
+                    <!-- MENU -->
+
+                    <div class="menu-title">
+                        🎵 SONG MENU
+                    </div>
 
                     <input
                         id="search"
@@ -294,15 +287,13 @@
                     >
 
 
-                    <!-- SONG LIST -->
-
                     <div
                         id="songList"
                         class="song-list">
                     </div>
 
 
-                    <!-- CONTROL BUTTONS -->
+                    <!-- CONTROLS -->
 
                     <div class="remote-buttons">
 
@@ -383,7 +374,7 @@
             <main class="phone-main">
 
 
-                <!-- CURRENT SONG -->
+                <!-- CURRENT -->
 
                 <section class="phone-now-playing">
 
@@ -392,11 +383,11 @@
                     </div>
 
                     <h1 id="remoteSongTitle">
-                        Connecting...
+                        No Song Playing
                     </h1>
 
                     <p id="remoteArtist">
-                        Please wait
+                        Reserve a song below
                     </p>
 
                 </section>
@@ -416,11 +407,19 @@
                 </section>
 
 
-                <!-- SONG LIST -->
+                <!-- SONG MENU -->
 
-                <section
-                    id="remoteSongList"
-                    class="phone-song-list">
+                <section class="phone-menu">
+
+                    <div class="phone-menu-title">
+                        🎵 SONG MENU
+                    </div>
+
+                    <section
+                        id="remoteSongList"
+                        class="phone-song-list">
+                    </section>
+
                 </section>
 
 
@@ -454,7 +453,7 @@
                         class="phone-play"
                         onclick="remoteCommand('toggle')">
 
-                        ▶
+                        ▶ Play / Pause
 
                     </button>
 
@@ -495,7 +494,7 @@
 
 
 <!-- =====================================================
-     YOUTUBE API
+     YOUTUBE
 ====================================================== -->
 
 <script
@@ -504,12 +503,10 @@
 
 
 <!-- =====================================================
-     YOUR APP
+     APP
 ====================================================== -->
 
 <script src="./app.js"></script>
 
-
 </body>
-
 </html>
