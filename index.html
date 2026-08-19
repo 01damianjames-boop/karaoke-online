@@ -2,473 +2,308 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Karaoke Online</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<div class="app">
 
-<!-- =====================================================
-     LOGIN
-====================================================== -->
+    <!-- =====================================================
+         HOST / CONTROL 1
+    ====================================================== -->
 
-<div
-    id="loginScreen"
-    class="login-screen">
+    <div id="hostApp">
 
-    <div class="login-box">
+        <header>
 
-        <div class="login-logo">
-            🎤
-        </div>
-
-        <h1>
-            KARAOKE ONLINE
-        </h1>
-
-        <p class="login-subtitle">
-            Private Access
-        </p>
-
-        <div class="login-form">
-
-            <label>
-                Username
-            </label>
-
-            <input
-                id="loginUsername"
-                type="text"
-                placeholder="Enter username"
-                autocomplete="username"
-                onkeydown="handleLoginKey(event)"
-            >
-
-            <label>
-                Password
-            </label>
-
-            <input
-                id="loginPassword"
-                type="password"
-                placeholder="Enter password"
-                autocomplete="current-password"
-                onkeydown="handleLoginKey(event)"
-            >
-
-            <button
-                class="login-button"
-                onclick="login()">
-
-                🔐 LOGIN
-
-            </button>
-
-            <div
-                id="loginError"
-                class="login-error">
+            <div class="logo">
+                🎤 KARAOKE ONLINE
             </div>
 
-        </div>
+            <div class="connection" id="connectionStatus">
+                🟡 Connecting...
+            </div>
 
-        <div class="login-footer">
-            🔒 Authorized access only
-        </div>
+        </header>
 
-    </div>
 
-</div>
+        <main>
 
+            <!-- =========================
+                 MAIN KARAOKE SCREEN
+            ========================== -->
 
-<!-- =====================================================
-     APP
-====================================================== -->
+            <section class="screen">
 
-<div
-    id="appContainer"
-    class="app-container">
-
-    <div class="app">
-
-
-        <!-- =================================================
-             CONTROL 1
-        ================================================== -->
-
-        <div id="hostApp">
-
-            <header>
-
-                <div class="logo">
-                    🎤 KARAOKE ONLINE
-                </div>
-
-                <div class="header-right">
-
-                    <div
-                        class="connection"
-                        id="connectionStatus">
-
-                        🟡 Connecting...
-
-                    </div>
-
-                    <button
-                        class="logout-button"
-                        onclick="logout()">
-
-                        🚪 Logout
-
-                    </button>
-
-                </div>
-
-            </header>
-
-
-            <main>
-
-
-                <!-- =========================================
-                     TV / PLAYER
-                ========================================== -->
-
-                <section class="screen">
-
-                    <div class="song-info">
-
-                        <div class="now-playing">
-                            NOW PLAYING
-                        </div>
-
-                        <h1 id="songTitle">
-                            No Song Playing
-                        </h1>
-
-                        <p id="artist">
-                            Reserve a song from the menu
-                        </p>
-
-                    </div>
-
-
-                    <div class="youtube-container">
-
-                        <div
-                            id="youtubePlayer">
-                        </div>
-
-                    </div>
-
-
-                    <div class="controls">
-
-                        <button
-                            onclick="previousSong()">
-
-                            ⏮
-
-                        </button>
-
-                        <button
-                            class="play"
-                            onclick="togglePlay()">
-
-                            ▶
-
-                        </button>
-
-                        <button
-                            onclick="nextSong()">
-
-                            ⏭
-
-                        </button>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =========================================
-                     MENU / CONTROL 1
-                ========================================== -->
-
-                <section class="remote">
-
-                    <div class="remote-header">
-
-                        <div>
-
-                            <h2>
-                                🎛 CONTROL 1
-                            </h2>
-
-                            <p class="small-text">
-                                TV / Main Controller
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PHONE CONNECTION -->
-
-                    <div class="room-box">
-
-                        <div class="room-title">
-                            📱 PHONE REMOTE
-                        </div>
-
-                        <div
-                            class="room-code"
-                            id="roomCode">
-
-                            Connecting...
-
-                        </div>
-
-                        <div
-                            id="qrcode"
-                            class="qrcode">
-                        </div>
-
-                        <div
-                            id="remoteLink"
-                            class="remote-link">
-
-                            Preparing remote...
-
-                        </div>
-
-                        <button
-                            class="copy-room"
-                            onclick="copyRemoteLink()">
-
-                            📋 Copy Remote Link
-
-                        </button>
-
-                        <div
-                            id="phoneStatus"
-                            class="phone-status">
-
-                            📱 No phone connected
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- MENU -->
-
-                    <div class="menu-title">
-                        🎵 SONG MENU
-                    </div>
-
-                    <input
-                        id="search"
-                        type="text"
-                        placeholder="🔎 Search song..."
-                        oninput="searchSongs()"
-                    >
-
-
-                    <div
-                        id="songList"
-                        class="song-list">
-                    </div>
-
-
-                    <!-- CONTROLS -->
-
-                    <div class="remote-buttons">
-
-                        <button
-                            onclick="previousSong()">
-
-                            ⏮ Previous
-
-                        </button>
-
-                        <button
-                            onclick="togglePlay()">
-
-                            ▶ Play / Pause
-
-                        </button>
-
-                        <button
-                            onclick="nextSong()">
-
-                            Next ⏭
-
-                        </button>
-
-                    </div>
-
-                </section>
-
-            </main>
-
-
-            <footer>
-
-                KARAOKE ONLINE • CONTROL 1 + PHONE REMOTE
-
-            </footer>
-
-        </div>
-
-
-        <!-- =================================================
-             PHONE / CONTROL 2
-        ================================================== -->
-
-        <div
-            id="remoteApp"
-            class="phone-remote-app">
-
-            <header class="phone-header">
-
-                <div class="logo">
-                    🎤 KARAOKE REMOTE
-                </div>
-
-                <div class="phone-header-right">
-
-                    <div
-                        class="connection"
-                        id="remoteConnectionStatus">
-
-                        🟡 Connecting...
-
-                    </div>
-
-                    <button
-                        class="logout-button phone-logout"
-                        onclick="logout()">
-
-                        🚪
-
-                    </button>
-
-                </div>
-
-            </header>
-
-
-            <main class="phone-main">
-
-
-                <!-- CURRENT -->
-
-                <section class="phone-now-playing">
+                <div class="song-info">
 
                     <div class="now-playing">
                         NOW PLAYING
                     </div>
 
-                    <h1 id="remoteSongTitle">
-                        No Song Playing
+                    <h1 id="songTitle">
+                        No Song Selected
                     </h1>
 
-                    <p id="remoteArtist">
-                        Reserve a song below
+                    <p id="artist">
+                        Choose a song from the remote
                     </p>
 
-                </section>
+                </div>
+
+
+                <!-- YOUTUBE PLAYER -->
+
+                <div class="youtube-container">
+
+                    <div
+                        id="youtubePlayer"
+                        style="width:100%; height:100%;">
+                    </div>
+
+                </div>
+
+
+                <!-- MAIN CONTROLS -->
+
+                <div class="controls">
+
+                    <button onclick="previousSong()">
+                        ⏮
+                    </button>
+
+                    <button
+                        class="play"
+                        onclick="togglePlay()">
+                        ▶
+                    </button>
+
+                    <button onclick="nextSong()">
+                        ⏭
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 CONTROL 1 REMOTE / QUEUE
+            ========================== -->
+
+            <section class="remote">
+
+                <div class="remote-header">
+
+                    <div>
+                        <h2>
+                            🎛 CONTROL 1
+                        </h2>
+
+                        <p class="small-text">
+                            TV / Main Controller
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- ROOM -->
+
+                <div class="room-box">
+
+                    <div class="room-title">
+                        📱 PHONE REMOTE
+                    </div>
+
+                    <div class="room-code" id="roomCode">
+                        Connecting...
+                    </div>
+
+                    <div
+                        id="qrcode"
+                        class="qrcode">
+                    </div>
+
+                    <div
+                        id="remoteLink"
+                        class="remote-link">
+                        Preparing remote...
+                    </div>
+
+                    <button
+                        class="copy-room"
+                        onclick="copyRemoteLink()">
+                        📋 Copy Remote Link
+                    </button>
+
+                    <div
+                        id="phoneStatus"
+                        class="phone-status">
+                        📱 No phone connected
+                    </div>
+
+                </div>
 
 
                 <!-- SEARCH -->
 
-                <section class="phone-search">
-
-                    <input
-                        id="remoteSearch"
-                        type="text"
-                        placeholder="🔎 Search song..."
-                        oninput="searchRemoteSongs()"
-                    >
-
-                </section>
+                <input
+                    id="search"
+                    type="text"
+                    placeholder="🔎 Search song..."
+                    oninput="searchSongs()"
+                >
 
 
-                <!-- SONG MENU -->
+                <!-- SONG LIST -->
 
-                <section class="phone-menu">
-
-                    <div class="phone-menu-title">
-                        🎵 SONG MENU
-                    </div>
-
-                    <section
-                        id="remoteSongList"
-                        class="phone-song-list">
-                    </section>
-
-                </section>
+                <div
+                    id="songList"
+                    class="song-list">
+                </div>
 
 
-                <!-- QUEUE -->
+                <!-- CONTROL BUTTONS -->
 
-                <section class="phone-queue">
+                <div class="remote-buttons">
 
-                    <div class="queue-title">
-                        📌 RESERVED SONGS
-                    </div>
-
-                    <div id="remoteQueue">
-                        No reserved songs
-                    </div>
-
-                </section>
-
-
-                <!-- CONTROLS -->
-
-                <section class="phone-controls">
-
-                    <button
-                        onclick="remoteCommand('previous')">
-
-                        ⏮
-
+                    <button onclick="previousSong()">
+                        ⏮ Previous
                     </button>
 
-                    <button
-                        class="phone-play"
-                        onclick="remoteCommand('toggle')">
-
+                    <button onclick="togglePlay()">
                         ▶ Play / Pause
-
                     </button>
 
-                    <button
-                        onclick="remoteCommand('next')">
-
-                        ⏭
-
+                    <button onclick="nextSong()">
+                        Next ⏭
                     </button>
 
-                </section>
+                </div>
 
-            </main>
+            </section>
 
-        </div>
+        </main>
+
+
+        <footer>
+            KARAOKE ONLINE • CONTROL 1 + PHONE REMOTE
+        </footer>
+
+    </div>
+
+
+    <!-- =====================================================
+         PHONE / CONTROL 2
+    ====================================================== -->
+
+    <div
+        id="remoteApp"
+        class="phone-remote-app">
+
+        <header class="phone-header">
+
+            <div class="logo">
+                🎤 KARAOKE REMOTE
+            </div>
+
+            <div
+                class="connection"
+                id="remoteConnectionStatus">
+                🟡 Connecting...
+            </div>
+
+        </header>
+
+
+        <main class="phone-main">
+
+            <!-- CURRENT SONG -->
+
+            <section class="phone-now-playing">
+
+                <div class="now-playing">
+                    NOW PLAYING
+                </div>
+
+                <h1 id="remoteSongTitle">
+                    Connecting...
+                </h1>
+
+                <p id="remoteArtist">
+                    Please wait
+                </p>
+
+            </section>
+
+
+            <!-- SEARCH -->
+
+            <section class="phone-search">
+
+                <input
+                    id="remoteSearch"
+                    type="text"
+                    placeholder="🔎 Search song..."
+                    oninput="searchRemoteSongs()"
+                >
+
+            </section>
+
+
+            <!-- SONG LIST -->
+
+            <section
+                id="remoteSongList"
+                class="phone-song-list">
+            </section>
+
+
+            <!-- QUEUE -->
+
+            <section class="phone-queue">
+
+                <div class="queue-title">
+                    📌 RESERVED SONGS
+                </div>
+
+                <div id="remoteQueue">
+                    No reserved songs
+                </div>
+
+            </section>
+
+
+            <!-- CONTROLS -->
+
+            <section class="phone-controls">
+
+                <button
+                    onclick="remoteCommand('previous')">
+                    ⏮
+                </button>
+
+                <button
+                    class="phone-play"
+                    onclick="remoteCommand('toggle')">
+                    ▶
+                </button>
+
+                <button
+                    onclick="remoteCommand('next')">
+                    ⏭
+                </button>
+
+            </section>
+
+        </main>
 
     </div>
 
@@ -479,34 +314,20 @@
      PEERJS
 ====================================================== -->
 
-<script
-    src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 
+<!-- QR CODE -->
 
-<!-- =====================================================
-     QR CODE
-====================================================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-</script>
+<!-- YOUTUBE API -->
 
+<script src="https://www.youtube.com/iframe_api"></script>
 
-<!-- =====================================================
-     YOUTUBE
-====================================================== -->
-
-<script
-    src="https://www.youtube.com/iframe_api">
-</script>
-
-
-<!-- =====================================================
-     APP
-====================================================== -->
+<!-- YOUR APP -->
 
 <script src="./app.js"></script>
 
 </body>
+
 </html>

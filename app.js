@@ -1,14 +1,7 @@
 /* =========================================================
    KARAOKE ONLINE
-   CONTROL 1 + PHONE REMOTE
-   QUEUE / RESERVE + AUTO PLAY
+   CONTROL 1 + PHONE CONTROL 2
 ========================================================= */
-
-const LOGIN_USERNAME = "admin";
-const LOGIN_PASSWORD = "Karaoke123!";
-
-let isLoggedIn =
-    sessionStorage.getItem("karaokeLoggedIn") === "true";
 
 
 /* =========================================================
@@ -16,31 +9,37 @@ let isLoggedIn =
 ========================================================= */
 
 const songs = [
+
     {
         title: "Heaven Knows",
         artist: "Rick Price",
         youtube: "m7o9fbTsRuc"
     },
+
     {
         title: "Back to me",
         artist: "Cueshe - Karaoke",
         youtube: "jNYXQLWlk6k"
     },
+
     {
         title: "24 Hours",
         artist: "Cueshe - Karaoke",
         youtube: "BiKU79XjelQ"
     },
+
     {
         title: "Stay",
         artist: "Karaoke",
         youtube: "ymalJ5AMH4U"
     },
+
     {
         title: "Borrowed Time",
         artist: "Karaoke",
         youtube: "feskSn7ZI6Y"
     }
+
 ];
 
 
@@ -48,7 +47,7 @@ const songs = [
    GLOBAL STATE
 ========================================================= */
 
-let currentSong = null;
+let currentSong = 0;
 
 let reservedSongs = [];
 
@@ -58,11 +57,9 @@ let pendingSongIndex = null;
 
 let isPlaying = false;
 
-let youtubeApiReady = false;
-
 
 /* =========================================================
-   REMOTE / PEER
+   REMOTE / PEER STATE
 ========================================================= */
 
 const urlParams =
@@ -74,6 +71,11 @@ const remoteRoom =
 const isRemote =
     Boolean(remoteRoom);
 
+
+/* =========================================================
+   PEERJS
+========================================================= */
+
 let peer = null;
 
 let hostConnection = null;
@@ -82,199 +84,29 @@ let remoteConnections = [];
 
 
 /* =========================================================
-   LOGIN
+   START MODE
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-        showLoginScreen();
+
+        if (isRemote) {
+
+            startRemote();
+
+        } else {
+
+            startHost();
+
+        }
+
     }
 );
 
 
-function showLoginScreen() {
-
-    const loginScreen =
-        document.getElementById("loginScreen");
-
-    const app =
-        document.getElementById("appContainer");
-
-    if (!loginScreen || !app) {
-        return;
-    }
-
-    if (isLoggedIn) {
-
-        loginScreen.style.display = "none";
-        app.style.display = "block";
-
-        startKaraokeApp();
-
-    } else {
-
-        loginScreen.style.display = "flex";
-        app.style.display = "none";
-
-    }
-}
-
-
 /* =========================================================
-   LOGIN
-========================================================= */
-
-function login() {
-
-    const username =
-        document
-            .getElementById("loginUsername")
-            .value
-            .trim();
-
-    const password =
-        document.getElementById("loginPassword").value;
-
-    const error =
-        document.getElementById("loginError");
-
-    if (
-        username === LOGIN_USERNAME &&
-        password === LOGIN_PASSWORD
-    ) {
-
-        sessionStorage.setItem(
-            "karaokeLoggedIn",
-            "true"
-        );
-
-        isLoggedIn = true;
-
-        error.textContent = "";
-
-        document.getElementById(
-            "loginUsername"
-        ).value = "";
-
-        document.getElementById(
-            "loginPassword"
-        ).value = "";
-
-        showLoginScreen();
-
-    } else {
-
-        error.textContent =
-            "❌ Incorrect username or password.";
-
-        document.getElementById(
-            "loginPassword"
-        ).value = "";
-
-    }
-}
-
-
-function handleLoginKey(event) {
-
-    if (event.key === "Enter") {
-        login();
-    }
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function logout() {
-
-    if (
-        !confirm(
-            "Are you sure you want to logout?"
-        )
-    ) {
-        return;
-    }
-
-    sessionStorage.removeItem(
-        "karaokeLoggedIn"
-    );
-
-    isLoggedIn = false;
-
-    if (peer) {
-
-        try {
-            peer.destroy();
-        } catch (error) {
-            console.log(error);
-        }
-
-        peer = null;
-    }
-
-    remoteConnections = [];
-    hostConnection = null;
-
-    if (
-        youtubePlayer &&
-        typeof youtubePlayer.destroy === "function"
-    ) {
-
-        try {
-            youtubePlayer.destroy();
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    youtubePlayer = null;
-
-    pendingSongIndex = null;
-
-    currentSong = null;
-
-    reservedSongs = [];
-
-    isPlaying = false;
-
-    document.getElementById(
-        "appContainer"
-    ).style.display = "none";
-
-    document.getElementById(
-        "loginScreen"
-    ).style.display = "flex";
-
-    document.getElementById(
-        "loginUsername"
-    ).focus();
-}
-
-
-/* =========================================================
-   START APP
-========================================================= */
-
-function startKaraokeApp() {
-
-    if (!isLoggedIn) {
-        return;
-    }
-
-    if (isRemote) {
-        startRemote();
-    } else {
-        startHost();
-    }
-}
-
-
-/* =========================================================
-   HOST
+   HOST START
 ========================================================= */
 
 function startHost() {
@@ -289,12 +121,11 @@ function startHost() {
 
     renderSongs();
 
-    initializeYouTubePlayer();
 }
 
 
 /* =========================================================
-   REMOTE
+   REMOTE START
 ========================================================= */
 
 function startRemote() {
@@ -306,43 +137,7 @@ function startRemote() {
         "block";
 
     startRemotePeer();
-}
 
-
-/* =========================================================
-   YOUTUBE INITIALIZE
-========================================================= */
-
-function initializeYouTubePlayer() {
-
-    if (isRemote) {
-        return;
-    }
-
-    if (!isLoggedIn) {
-        return;
-    }
-
-    if (youtubePlayer) {
-        return;
-    }
-
-    if (
-        !youtubeApiReady ||
-        typeof YT === "undefined" ||
-        typeof YT.Player === "undefined"
-    ) {
-        return;
-    }
-
-    const playerElement =
-        document.getElementById("youtubePlayer");
-
-    if (!playerElement) {
-        return;
-    }
-
-    createYouTubePlayer();
 }
 
 
@@ -351,10 +146,6 @@ function initializeYouTubePlayer() {
 ========================================================= */
 
 function startHostPeer() {
-
-    if (peer) {
-        return;
-    }
 
     peer = new Peer();
 
@@ -367,13 +158,11 @@ function startHostPeer() {
                     Math.max(0, id.length - 8)
                 );
 
-            const roomCode =
-                document.getElementById("roomCode");
+            document.getElementById(
+                "roomCode"
+            ).textContent =
+                code.toUpperCase();
 
-            if (roomCode) {
-                roomCode.textContent =
-                    code.toUpperCase();
-            }
 
             const remoteUrl =
                 window.location.origin +
@@ -381,25 +170,21 @@ function startHostPeer() {
                 "?remote=" +
                 encodeURIComponent(id);
 
-            const remoteLink =
-                document.getElementById("remoteLink");
 
-            if (remoteLink) {
-                remoteLink.textContent =
-                    remoteUrl;
-            }
+            document.getElementById(
+                "remoteLink"
+            ).textContent =
+                remoteUrl;
+
 
             generateQRCode(remoteUrl);
 
-            const status =
-                document.getElementById(
-                    "connectionStatus"
-                );
 
-            if (status) {
-                status.textContent =
-                    "🟢 Room Ready";
-            }
+            document.getElementById(
+                "connectionStatus"
+            ).textContent =
+                "🟢 Room Ready";
+
         }
     );
 
@@ -410,27 +195,33 @@ function startHostPeer() {
 
             remoteConnections.push(connection);
 
-            const phoneStatus =
-                document.getElementById("phoneStatus");
+            document.getElementById(
+                "phoneStatus"
+            ).textContent =
+                "📱 Phone Connected";
 
-            if (phoneStatus) {
-                phoneStatus.textContent =
-                    "📱 Phone Connected";
-            }
 
             connection.on(
                 "open",
                 function () {
+
                     sendState(connection);
+
                 }
             );
+
 
             connection.on(
                 "data",
                 function (data) {
-                    handleRemoteCommand(data);
+
+                    handleRemoteCommand(
+                        data
+                    );
+
                 }
             );
+
 
             connection.on(
                 "close",
@@ -445,18 +236,16 @@ function startHostPeer() {
                         remoteConnections.length === 0
                     ) {
 
-                        const status =
-                            document.getElementById(
-                                "phoneStatus"
-                            );
+                        document.getElementById(
+                            "phoneStatus"
+                        ).textContent =
+                            "📱 No phone connected";
 
-                        if (status) {
-                            status.textContent =
-                                "📱 No phone connected";
-                        }
                     }
+
                 }
             );
+
         }
     );
 
@@ -470,17 +259,14 @@ function startHostPeer() {
                 error
             );
 
-            const status =
-                document.getElementById(
-                    "connectionStatus"
-                );
+            document.getElementById(
+                "connectionStatus"
+            ).textContent =
+                "🔴 Connection Error";
 
-            if (status) {
-                status.textContent =
-                    "🔴 Connection Error";
-            }
         }
     );
+
 }
 
 
@@ -490,73 +276,69 @@ function startHostPeer() {
 
 function startRemotePeer() {
 
-    if (peer) {
-        return;
-    }
-
     peer = new Peer();
+
 
     peer.on(
         "open",
         function () {
 
             hostConnection =
-                peer.connect(remoteRoom);
+                peer.connect(
+                    remoteRoom
+                );
+
 
             hostConnection.on(
                 "open",
                 function () {
 
-                    const status =
-                        document.getElementById(
-                            "remoteConnectionStatus"
-                        );
+                    document.getElementById(
+                        "remoteConnectionStatus"
+                    ).textContent =
+                        "🟢 Connected";
 
-                    if (status) {
-                        status.textContent =
-                            "🟢 Connected";
-                    }
                 }
             );
+
 
             hostConnection.on(
                 "data",
                 function (data) {
-                    handleHostState(data);
+
+                    handleHostState(
+                        data
+                    );
+
                 }
             );
+
 
             hostConnection.on(
                 "close",
                 function () {
 
-                    const status =
-                        document.getElementById(
-                            "remoteConnectionStatus"
-                        );
+                    document.getElementById(
+                        "remoteConnectionStatus"
+                    ).textContent =
+                        "🔴 Disconnected";
 
-                    if (status) {
-                        status.textContent =
-                            "🔴 Disconnected";
-                    }
                 }
             );
+
 
             hostConnection.on(
                 "error",
                 function () {
 
-                    const status =
-                        document.getElementById(
-                            "remoteConnectionStatus"
-                        );
+                    document.getElementById(
+                        "remoteConnectionStatus"
+                    ).textContent =
+                        "🔴 Connection Error";
 
-                    if (status) {
-                        status.textContent =
-                            "🔴 Connection Error";
-                    }
                 }
             );
+
         }
     );
 
@@ -570,36 +352,33 @@ function startRemotePeer() {
                 error
             );
 
-            const status =
-                document.getElementById(
-                    "remoteConnectionStatus"
-                );
+            document.getElementById(
+                "remoteConnectionStatus"
+            ).textContent =
+                "🔴 Connection Failed";
 
-            if (status) {
-                status.textContent =
-                    "🔴 Connection Failed";
-            }
         }
     );
+
 }
 
 
 /* =========================================================
-   QR
+   GENERATE QR
 ========================================================= */
 
 function generateQRCode(url) {
 
     const qr =
-        document.getElementById("qrcode");
-
-    if (!qr) {
-        return;
-    }
+        document.getElementById(
+            "qrcode"
+        );
 
     qr.innerHTML = "";
 
-    if (typeof QRCode !== "undefined") {
+    if (
+        typeof QRCode !== "undefined"
+    ) {
 
         new QRCode(
             qr,
@@ -609,49 +388,51 @@ function generateQRCode(url) {
                 height: 150
             }
         );
+
     }
+
 }
 
 
 /* =========================================================
-   COPY LINK
+   COPY REMOTE LINK
 ========================================================= */
 
 function copyRemoteLink() {
 
-    const element =
-        document.getElementById("remoteLink");
+    const link =
+        document.getElementById(
+            "remoteLink"
+        ).textContent;
 
-    if (!element) {
-        return;
-    }
-
-    const link = element.textContent;
 
     if (
         !link ||
         link === "Preparing remote..."
     ) {
+
         return;
+
     }
+
 
     navigator.clipboard
         .writeText(link)
         .then(
             function () {
-                alert("📱 Remote link copied!");
-            }
-        )
-        .catch(
-            function () {
-                alert("❌ Unable to copy link.");
+
+                alert(
+                    "📱 Remote link copied!"
+                );
+
             }
         );
+
 }
 
 
 /* =========================================================
-   SEND STATE
+   SEND STATE TO ONE REMOTE
 ========================================================= */
 
 function sendState(connection) {
@@ -660,14 +441,18 @@ function sendState(connection) {
         !connection ||
         !connection.open
     ) {
+
         return;
+
     }
+
 
     connection.send({
 
         type: "state",
 
-        currentSong: currentSong,
+        currentSong:
+            currentSong,
 
         reservedSongs:
             [...reservedSongs],
@@ -676,8 +461,13 @@ function sendState(connection) {
             isPlaying
 
     });
+
 }
 
+
+/* =========================================================
+   BROADCAST STATE
+========================================================= */
 
 function broadcastState() {
 
@@ -685,16 +475,20 @@ function broadcastState() {
         return;
     }
 
+
     remoteConnections.forEach(
         function (connection) {
+
             sendState(connection);
+
         }
     );
+
 }
 
 
 /* =========================================================
-   REMOTE COMMAND
+   HANDLE REMOTE COMMAND
 ========================================================= */
 
 function handleRemoteCommand(data) {
@@ -703,37 +497,63 @@ function handleRemoteCommand(data) {
         return;
     }
 
+
     switch (data.type) {
 
         case "reserve":
-            reserveSong(data.index);
+
+            reserveSong(
+                data.index
+            );
+
             break;
+
 
         case "removeReserve":
-            removeReserve(data.index);
+
+            removeReserve(
+                data.index
+            );
+
             break;
+
 
         case "next":
+
             nextSong();
+
             break;
+
 
         case "previous":
+
             previousSong();
+
             break;
+
 
         case "toggle":
+
             togglePlay();
+
             break;
 
+
         case "load":
-            loadSong(data.index, true);
+
+            loadSong(
+                data.index
+            );
+
             break;
+
     }
+
 }
 
 
 /* =========================================================
-   HOST STATE → PHONE
+   HANDLE HOST STATE
 ========================================================= */
 
 function handleHostState(data) {
@@ -742,8 +562,11 @@ function handleHostState(data) {
         !data ||
         data.type !== "state"
     ) {
+
         return;
+
     }
+
 
     currentSong =
         data.currentSong;
@@ -752,44 +575,39 @@ function handleHostState(data) {
         data.reservedSongs || [];
 
     isPlaying =
-        Boolean(data.isPlaying);
+        data.isPlaying;
 
-    const title =
-        document.getElementById(
-            "remoteSongTitle"
-        );
 
-    const artist =
-        document.getElementById(
-            "remoteArtist"
-        );
+    const song =
+        songs[currentSong];
 
-    if (currentSong !== null && songs[currentSong]) {
 
-        title.textContent =
-            songs[currentSong].title;
-
-        artist.textContent =
-            songs[currentSong].artist;
-
-    } else {
-
-        title.textContent =
-            "No Song Playing";
-
-        artist.textContent =
-            "Reserve a song below";
-
+    if (!song) {
+        return;
     }
+
+
+    document.getElementById(
+        "remoteSongTitle"
+    ).textContent =
+        song.title;
+
+
+    document.getElementById(
+        "remoteArtist"
+    ).textContent =
+        song.artist;
+
 
     renderRemoteSongs();
 
     renderRemoteQueue();
+
 }
 
 
 /* =========================================================
-   REMOTE SEND COMMAND
+   REMOTE COMMAND
 ========================================================= */
 
 function remoteCommand(command) {
@@ -798,14 +616,24 @@ function remoteCommand(command) {
         !hostConnection ||
         !hostConnection.open
     ) {
+
         return;
+
     }
 
+
     hostConnection.send({
+
         type: command
+
     });
+
 }
 
+
+/* =========================================================
+   REMOTE RESERVE
+========================================================= */
 
 function remoteReserve(index) {
 
@@ -813,8 +641,11 @@ function remoteReserve(index) {
         !hostConnection ||
         !hostConnection.open
     ) {
+
         return;
+
     }
+
 
     hostConnection.send({
 
@@ -823,8 +654,13 @@ function remoteReserve(index) {
         index: index
 
     });
+
 }
 
+
+/* =========================================================
+   REMOTE REMOVE
+========================================================= */
 
 function remoteRemoveReserve(index) {
 
@@ -832,8 +668,11 @@ function remoteRemoveReserve(index) {
         !hostConnection ||
         !hostConnection.open
     ) {
+
         return;
+
     }
+
 
     hostConnection.send({
 
@@ -842,6 +681,7 @@ function remoteRemoveReserve(index) {
         index: index
 
     });
+
 }
 
 
@@ -849,132 +689,112 @@ function remoteRemoveReserve(index) {
    LOAD SONG
 ========================================================= */
 
-function loadSong(
-    index,
-    autoPlay = false
-) {
+function loadSong(index) {
 
-    if (
-        index === null ||
-        index === undefined ||
-        !songs[index]
-    ) {
-        return;
+    if (index < 0) {
+
+        index =
+            songs.length - 1;
+
     }
 
+
+    if (index >= songs.length) {
+
+        index = 0;
+
+    }
+
+
     currentSong = index;
+
 
     const song =
         songs[currentSong];
 
-    const title =
-        document.getElementById("songTitle");
 
-    const artist =
-        document.getElementById("artist");
+    document.getElementById(
+        "songTitle"
+    ).textContent =
+        song.title;
 
-    if (title) {
-        title.textContent =
-            song.title;
-    }
 
-    if (artist) {
-        artist.textContent =
-            song.artist;
-    }
+    document.getElementById(
+        "artist"
+    ).textContent =
+        song.artist;
+
 
     renderSongs();
 
-    /*
-       If player is not ready,
-       remember the song.
-    */
 
     if (!youtubePlayer) {
 
         pendingSongIndex =
             index;
 
-        isPlaying = false;
-
         broadcastState();
 
         return;
+
     }
+
 
     youtubePlayer.loadVideoById(
         song.youtube
     );
 
+
     isPlaying = false;
 
     broadcastState();
 
-    /*
-       Auto play is used when:
-       - first reserved song is selected
-       - queue moves to next song
-    */
-
-    if (autoPlay) {
-
-        setTimeout(
-            function () {
-
-                if (youtubePlayer) {
-                    youtubePlayer.playVideo();
-                }
-
-            },
-            500
-        );
-    }
 }
 
 
 /* =========================================================
-   YOUTUBE READY
+   YOUTUBE PLAYER READY
 ========================================================= */
 
 function onYouTubePlayerReady(event) {
-
-    console.log(
-        "YouTube player ready."
-    );
-
-    let index =
-        currentSong;
 
     if (
         pendingSongIndex !== null
     ) {
 
-        index =
+        const index =
             pendingSongIndex;
 
         pendingSongIndex =
             null;
 
-        currentSong =
-            index;
-    }
 
-    if (
-        index !== null &&
-        songs[index]
-    ) {
+        const song =
+            songs[index];
+
 
         event.target.loadVideoById(
-            songs[index].youtube
+            song.youtube
+        );
+
+
+    } else {
+
+        const song =
+            songs[currentSong];
+
+
+        event.target.loadVideoById(
+            song.youtube
         );
 
     }
 
+
     isPlaying = false;
 
-    updateHostDisplay();
-
     broadcastState();
+
 }
 
 
@@ -985,12 +805,6 @@ function onYouTubePlayerReady(event) {
 function onYouTubePlayerStateChange(event) {
 
     if (
-        typeof YT === "undefined"
-    ) {
-        return;
-    }
-
-    if (
         event.data ===
         YT.PlayerState.PLAYING
     ) {
@@ -999,7 +813,6 @@ function onYouTubePlayerStateChange(event) {
 
         broadcastState();
 
-        renderSongs();
     }
 
 
@@ -1012,7 +825,6 @@ function onYouTubePlayerStateChange(event) {
 
         broadcastState();
 
-        renderSongs();
     }
 
 
@@ -1023,45 +835,28 @@ function onYouTubePlayerStateChange(event) {
 
         isPlaying = false;
 
-        /*
-           Automatically play next reserved song.
-        */
+        broadcastState();
+
 
         setTimeout(
             function () {
+
                 nextSong();
+
             },
             300
         );
+
     }
+
 }
 
 
 /* =========================================================
-   CREATE YOUTUBE
+   CREATE YOUTUBE PLAYER
 ========================================================= */
 
 function createYouTubePlayer() {
-
-    if (youtubePlayer) {
-        return;
-    }
-
-    if (
-        typeof YT === "undefined" ||
-        typeof YT.Player === "undefined"
-    ) {
-        return;
-    }
-
-    const element =
-        document.getElementById(
-            "youtubePlayer"
-        );
-
-    if (!element) {
-        return;
-    }
 
     youtubePlayer =
         new YT.Player(
@@ -1069,9 +864,7 @@ function createYouTubePlayer() {
             {
 
                 videoId:
-                    currentSong !== null
-                        ? songs[currentSong].youtube
-                        : "",
+                    songs[currentSong].youtube,
 
                 playerVars: {
 
@@ -1095,92 +888,42 @@ function createYouTubePlayer() {
 
             }
         );
+
 }
 
 
 /* =========================================================
-   UPDATE DISPLAY
-========================================================= */
-
-function updateHostDisplay() {
-
-    const title =
-        document.getElementById("songTitle");
-
-    const artist =
-        document.getElementById("artist");
-
-    if (
-        currentSong !== null &&
-        songs[currentSong]
-    ) {
-
-        title.textContent =
-            songs[currentSong].title;
-
-        artist.textContent =
-            songs[currentSong].artist;
-
-    } else {
-
-        title.textContent =
-            "No Song Playing";
-
-        artist.textContent =
-            "Reserve a song from the menu";
-
-    }
-
-    renderSongs();
-}
-
-
-/* =========================================================
-   NEXT SONG
+   NEXT
 ========================================================= */
 
 function nextSong() {
 
-    /*
-       IMPORTANT:
-       If there is a reserved song,
-       play the FIRST item in the queue.
-    */
-
-    if (reservedSongs.length > 0) {
+    if (
+        reservedSongs.length > 0
+    ) {
 
         const nextIndex =
             reservedSongs.shift();
 
+
         loadSong(
-            nextIndex,
-            true
+            nextIndex
         );
 
-        renderSongs();
 
-        renderRemoteQueue();
+        renderSongs();
 
         broadcastState();
 
         return;
+
     }
 
-    /*
-       If there are NO reserved songs,
-       don't randomly skip to another song.
 
-       This prevents a song from playing
-       when nobody reserved anything.
-    */
+    loadSong(
+        currentSong + 1
+    );
 
-    currentSong = null;
-
-    isPlaying = false;
-
-    updateHostDisplay();
-
-    broadcastState();
 }
 
 
@@ -1190,22 +933,10 @@ function nextSong() {
 
 function previousSong() {
 
-    if (currentSong === null) {
-        return;
-    }
-
-    let previous =
-        currentSong - 1;
-
-    if (previous < 0) {
-        previous =
-            songs.length - 1;
-    }
-
     loadSong(
-        previous,
-        false
+        currentSong - 1
     );
+
 }
 
 
@@ -1215,54 +946,14 @@ function previousSong() {
 
 function togglePlay() {
 
-    /*
-       IMPORTANT:
-       No current song = do nothing.
-    */
-
-    if (
-        currentSong === null
-    ) {
-
-        /*
-           If there is a queue,
-           start the first reserved song.
-        */
-
-        if (
-            reservedSongs.length > 0
-        ) {
-
-            const first =
-                reservedSongs.shift();
-
-            loadSong(
-                first,
-                true
-            );
-
-            renderSongs();
-
-            broadcastState();
-
-        }
-
-        return;
-    }
-
-
     if (!youtubePlayer) {
         return;
     }
 
-    if (
-        typeof YT === "undefined"
-    ) {
-        return;
-    }
 
     const state =
         youtubePlayer.getPlayerState();
+
 
     if (
         state ===
@@ -1271,77 +962,49 @@ function togglePlay() {
 
         youtubePlayer.pauseVideo();
 
+
     } else {
 
         youtubePlayer.playVideo();
 
     }
+
 }
 
 
 /* =========================================================
-   RESERVE SONG
+   RESERVE
 ========================================================= */
 
 function reserveSong(index) {
 
     if (
-        index === null ||
-        index === undefined ||
-        !songs[index]
-    ) {
-        return;
-    }
-
-    /*
-       Do not reserve the song currently playing.
-    */
-
-    if (
         index === currentSong
     ) {
+
         return;
+
     }
 
-    /*
-       Do not reserve same song twice.
-    */
 
     if (
         reservedSongs.includes(index)
     ) {
+
         return;
-    }
-
-    reservedSongs.push(index);
-
-    /*
-       IMPORTANT:
-       If there is NO song currently playing,
-       immediately take the first reservation
-       and start playing it.
-    */
-
-    if (
-        currentSong === null &&
-        !isPlaying
-    ) {
-
-        const first =
-            reservedSongs.shift();
-
-        loadSong(
-            first,
-            true
-        );
 
     }
+
+
+    reservedSongs.push(
+        index
+    );
+
 
     renderSongs();
 
-    renderRemoteQueue();
-
     broadcastState();
+
 }
 
 
@@ -1357,30 +1020,33 @@ function removeReserve(index) {
                 songIndex !== index
         );
 
+
     renderSongs();
 
-    renderRemoteQueue();
-
     broadcastState();
+
 }
 
 
 /* =========================================================
-   HOST SEARCH
+   SEARCH HOST
 ========================================================= */
 
 function searchSongs() {
 
-    const input =
-        document.getElementById("search");
+    const search =
+        document
+            .getElementById(
+                "search"
+            )
+            .value
+            .toLowerCase();
 
-    if (!input) {
-        return;
-    }
 
     renderSongs(
-        input.value.toLowerCase()
+        search
     );
+
 }
 
 
@@ -1397,39 +1063,48 @@ function renderSongs(
             "songList"
         );
 
+
     if (!list) {
         return;
     }
 
+
     list.innerHTML = "";
+
 
     songs.forEach(
         function (song, index) {
 
             if (
+
                 !song.title
                     .toLowerCase()
                     .includes(search)
+
                 &&
+
                 !song.artist
                     .toLowerCase()
                     .includes(search)
+
             ) {
+
                 return;
+
             }
+
 
             const button =
                 document.createElement(
                     "button"
                 );
 
+
             button.className =
                 "song";
 
 
-            /*
-               CURRENT
-            */
+            /* CURRENT */
 
             if (
                 index === currentSong
@@ -1439,62 +1114,75 @@ function renderSongs(
                     "playing"
                 );
 
+
                 button.innerHTML = `
 
                     🎤 ${song.title}
 
                     <span>
-                        ${isPlaying
-                            ? "▶ NOW PLAYING"
-                            : "⏸ PAUSED"}
-
+                        ▶ NOW PLAYING
                     </span>
+
                 `;
+
 
                 button.onclick =
                     function () {
-                        togglePlay();
+
+                        loadSong(
+                            index
+                        );
+
                     };
+
 
             }
 
 
-            /*
-               RESERVED
-            */
+            /* RESERVED */
 
             else if (
-                reservedSongs.includes(index)
+                reservedSongs.includes(
+                    index
+                )
             ) {
 
-                const number =
-                    reservedSongs.indexOf(index) + 1;
+                const reserveNumber =
+                    reservedSongs.indexOf(
+                        index
+                    ) + 1;
+
 
                 button.classList.add(
                     "reserved"
                 );
+
 
                 button.innerHTML = `
 
                     🎵 ${song.title}
 
                     <span>
-                        📌 RESERVED #${number}
-                        • Click to remove
+                        📌 RESERVED #${reserveNumber}
                     </span>
+
                 `;
+
 
                 button.onclick =
                     function () {
-                        removeReserve(index);
+
+                        removeReserve(
+                            index
+                        );
+
                     };
+
 
             }
 
 
-            /*
-               AVAILABLE
-            */
+            /* NORMAL */
 
             else {
 
@@ -1504,19 +1192,30 @@ function renderSongs(
 
                     <span>
                         ${song.artist}
-                        • Click to reserve
                     </span>
+
                 `;
+
 
                 button.onclick =
                     function () {
-                        reserveSong(index);
+
+                        reserveSong(
+                            index
+                        );
+
                     };
+
             }
 
-            list.appendChild(button);
+
+            list.appendChild(
+                button
+            );
+
         }
     );
+
 }
 
 
@@ -1526,23 +1225,24 @@ function renderSongs(
 
 function searchRemoteSongs() {
 
-    const input =
-        document.getElementById(
-            "remoteSearch"
-        );
+    const search =
+        document
+            .getElementById(
+                "remoteSearch"
+            )
+            .value
+            .toLowerCase();
 
-    if (!input) {
-        return;
-    }
 
     renderRemoteSongs(
-        input.value.toLowerCase()
+        search
     );
+
 }
 
 
 /* =========================================================
-   RENDER PHONE SONGS
+   RENDER REMOTE SONGS
 ========================================================= */
 
 function renderRemoteSongs(
@@ -1554,39 +1254,46 @@ function renderRemoteSongs(
             "remoteSongList"
         );
 
+
     if (!list) {
         return;
     }
 
+
     list.innerHTML = "";
+
 
     songs.forEach(
         function (song, index) {
 
             if (
+
                 !song.title
                     .toLowerCase()
                     .includes(search)
+
                 &&
+
                 !song.artist
                     .toLowerCase()
                     .includes(search)
+
             ) {
+
                 return;
+
             }
+
 
             const button =
                 document.createElement(
                     "button"
                 );
 
+
             button.className =
                 "phone-song";
 
-
-            /*
-               CURRENT
-            */
 
             if (
                 index === currentSong
@@ -1596,39 +1303,36 @@ function renderRemoteSongs(
                     "playing"
                 );
 
+
                 button.innerHTML = `
 
                     🎤 ${song.title}
 
                     <span>
-                        ${isPlaying
-                            ? "▶ NOW PLAYING"
-                            : "⏸ PAUSED"}
+                        ▶ NOW PLAYING
                     </span>
+
                 `;
 
-                button.onclick =
-                    function () {
-                        remoteCommand("toggle");
-                    };
 
             }
 
-
-            /*
-               RESERVED
-            */
-
             else if (
-                reservedSongs.includes(index)
+                reservedSongs.includes(
+                    index
+                )
             ) {
 
                 const number =
-                    reservedSongs.indexOf(index) + 1;
+                    reservedSongs.indexOf(
+                        index
+                    ) + 1;
+
 
                 button.classList.add(
                     "reserved"
                 );
+
 
                 button.innerHTML = `
 
@@ -1638,19 +1342,20 @@ function renderRemoteSongs(
                         📌 RESERVED #${number}
                         • Tap to remove
                     </span>
+
                 `;
+
 
                 button.onclick =
                     function () {
-                        remoteRemoveReserve(index);
+
+                        remoteRemoveReserve(
+                            index
+                        );
+
                     };
 
             }
-
-
-            /*
-               AVAILABLE
-            */
 
             else {
 
@@ -1662,17 +1367,29 @@ function renderRemoteSongs(
                         ${song.artist}
                         • Tap to reserve
                     </span>
+
                 `;
+
 
                 button.onclick =
                     function () {
-                        remoteReserve(index);
+
+                        remoteReserve(
+                            index
+                        );
+
                     };
+
             }
 
-            list.appendChild(button);
+
+            list.appendChild(
+                button
+            );
+
         }
     );
+
 }
 
 
@@ -1687,11 +1404,14 @@ function renderRemoteQueue() {
             "remoteQueue"
         );
 
+
     if (!queue) {
         return;
     }
 
+
     queue.innerHTML = "";
+
 
     if (
         reservedSongs.length === 0
@@ -1701,7 +1421,9 @@ function renderRemoteQueue() {
             "No reserved songs";
 
         return;
+
     }
+
 
     reservedSongs.forEach(
         function (index, position) {
@@ -1709,17 +1431,16 @@ function renderRemoteQueue() {
             const song =
                 songs[index];
 
-            if (!song) {
-                return;
-            }
 
             const item =
                 document.createElement(
                     "div"
                 );
 
+
             item.className =
                 "queue-item";
+
 
             item.innerHTML = `
 
@@ -1735,26 +1456,31 @@ function renderRemoteQueue() {
                     onclick="remoteRemoveReserve(${index})">
                     ✕
                 </button>
+
             `;
 
-            queue.appendChild(item);
+
+            queue.appendChild(
+                item
+            );
+
         }
     );
+
 }
 
 
 /* =========================================================
-   YOUTUBE API CALLBACK
+   YOUTUBE CALLBACK
 ========================================================= */
 
 window.onYouTubeIframeAPIReady =
     function () {
 
-        console.log(
-            "YouTube IFrame API ready."
-        );
+        if (!isRemote) {
 
-        youtubeApiReady = true;
+            createYouTubePlayer();
 
-        initializeYouTubePlayer();
+        }
+
     };

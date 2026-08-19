@@ -22,206 +22,10 @@ button {
 
 
 /* =========================================================
-   LOGIN
+   HOST
 ========================================================= */
 
-.login-screen {
-
-    min-height: 100vh;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 20px;
-
-    background:
-        radial-gradient(
-            circle at center,
-            #191919 0%,
-            #080808 55%,
-            #030303 100%
-        );
-}
-
-.login-box {
-
-    width: 100%;
-
-    max-width: 420px;
-
-    padding: 40px 35px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #151515,
-            #090909
-        );
-
-    border: 1px solid #303030;
-
-    border-radius: 20px;
-
-    text-align: center;
-
-    box-shadow:
-        0 20px 60px
-        rgba(0, 0, 0, 0.7);
-}
-
-.login-logo {
-
-    width: 85px;
-    height: 85px;
-
-    margin: 0 auto 20px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #1d1d1d;
-
-    border: 2px solid #333;
-
-    font-size: 42px;
-}
-
-.login-box h1 {
-
-    font-size: 28px;
-
-    letter-spacing: 2px;
-
-    margin-bottom: 8px;
-}
-
-.login-subtitle {
-
-    color: #777;
-
-    font-size: 14px;
-
-    letter-spacing: 3px;
-
-    margin-bottom: 30px;
-}
-
-.login-form {
-    text-align: left;
-}
-
-.login-form label {
-
-    display: block;
-
-    color: #aaa;
-
-    font-size: 13px;
-
-    margin-bottom: 7px;
-}
-
-.login-form input {
-
-    width: 100%;
-
-    padding: 15px;
-
-    margin-bottom: 18px;
-
-    border-radius: 10px;
-
-    border: 1px solid #333;
-
-    outline: none;
-
-    background: #080808;
-
-    color: white;
-
-    font-size: 16px;
-}
-
-.login-form input:focus {
-
-    border-color: #20e020;
-
-    box-shadow:
-        0 0 0 2px
-        rgba(32, 224, 32, 0.08);
-}
-
-.login-button {
-
-    width: 100%;
-
-    padding: 15px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background: #20b820;
-
-    color: white;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    margin-top: 5px;
-
-    transition: 0.15s;
-}
-
-.login-button:hover {
-    background: #27d027;
-}
-
-.login-button:active {
-    transform: scale(0.98);
-}
-
-.login-error {
-
-    min-height: 20px;
-
-    margin-top: 15px;
-
-    text-align: center;
-
-    color: #ff5555;
-
-    font-size: 13px;
-}
-
-.login-footer {
-
-    margin-top: 25px;
-
-    color: #555;
-
-    font-size: 11px;
-
-    letter-spacing: 1px;
-}
-
-
-/* =========================================================
-   APP
-========================================================= */
-
-.app-container {
-
-    display: none;
-
+#hostApp {
     min-height: 100vh;
 }
 
@@ -235,13 +39,10 @@ button {
 ========================================================= */
 
 header {
-
     height: 75px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     padding: 0 35px;
@@ -252,50 +53,14 @@ header {
 }
 
 .logo {
-
     font-size: 28px;
-
     font-weight: bold;
-
     letter-spacing: 2px;
 }
 
-.header-right {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-}
-
 .connection {
-
     font-size: 16px;
-
     color: #7cff7c;
-}
-
-.logout-button {
-
-    border: 1px solid #333;
-
-    border-radius: 8px;
-
-    padding: 8px 12px;
-
-    background: #1b1b1b;
-
-    color: #aaa;
-
-    font-size: 13px;
-}
-
-.logout-button:hover {
-
-    background: #2a2a2a;
-
-    color: white;
 }
 
 
@@ -304,12 +69,11 @@ header {
 ========================================================= */
 
 main {
-
     display: grid;
 
     grid-template-columns:
         minmax(0, 2fr)
-        minmax(340px, 1fr);
+        minmax(320px, 1fr);
 
     gap: 20px;
 
@@ -341,7 +105,6 @@ main {
     padding: 30px;
 
     display: flex;
-
     flex-direction: column;
 
     justify-content: space-between;
@@ -354,6 +117,7 @@ main {
 
     overflow: hidden;
 }
+
 
 .song-info {
     margin-top: 5px;
@@ -444,6 +208,7 @@ main {
 }
 
 .controls button:hover {
+
     background: #333;
 }
 
@@ -457,7 +222,7 @@ main {
 
 
 /* =========================================================
-   CONTROL 1 / MENU
+   REMOTE PANEL
 ========================================================= */
 
 .remote {
@@ -493,6 +258,7 @@ main {
 }
 
 .remote-header h2 {
+
     font-size: 25px;
 }
 
@@ -505,22 +271,9 @@ main {
     margin-top: 4px;
 }
 
-.menu-title {
-
-    color: #aaa;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    letter-spacing: 2px;
-
-    margin: 8px 0;
-}
-
 
 /* =========================================================
-   ROOM
+   ROOM BOX
 ========================================================= */
 
 .room-box {
@@ -533,7 +286,7 @@ main {
 
     padding: 14px;
 
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 
     text-align: center;
 }
@@ -607,6 +360,7 @@ main {
 }
 
 .copy-room:hover {
+
     background: #333;
 }
 
@@ -644,6 +398,7 @@ main {
 }
 
 #search:focus {
+
     border-color: #666;
 }
 
@@ -660,7 +415,7 @@ main {
 
     overflow-x: hidden;
 
-    margin-top: 12px;
+    margin-top: 15px;
 
     padding-right: 3px;
 
@@ -668,6 +423,7 @@ main {
 }
 
 .song-list::-webkit-scrollbar {
+
     width: 7px;
 }
 
@@ -714,6 +470,7 @@ main {
 }
 
 .song:hover {
+
     background: #252525;
 }
 
@@ -731,32 +488,20 @@ main {
 .song.playing {
 
     border: 2px solid #20e020;
-
-    background:
-        linear-gradient(
-            90deg,
-            #142014,
-            #181818
-        );
 }
 
 .song.playing span {
+
     color: #8cff8c;
 }
 
 .song.reserved {
 
     border: 2px solid #e0a900;
-
-    background:
-        linear-gradient(
-            90deg,
-            #241e08,
-            #181818
-        );
 }
 
 .song.reserved span {
+
     color: #ffcc00;
 }
 
@@ -773,7 +518,7 @@ main {
 
     gap: 10px;
 
-    margin-top: 12px;
+    margin-top: 15px;
 }
 
 .remote-buttons button {
@@ -792,6 +537,7 @@ main {
 }
 
 .remote-buttons button:hover {
+
     background: #333;
 }
 
@@ -848,25 +594,15 @@ footer {
 }
 
 .phone-header .logo {
+
     font-size: 19px;
 }
 
 .phone-header .connection {
+
     font-size: 12px;
 }
 
-.phone-header-right {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-}
-
-.phone-logout {
-    padding: 7px 9px;
-}
 
 .phone-main {
 
@@ -938,36 +674,8 @@ footer {
 }
 
 #remoteSearch:focus {
+
     border-color: #666;
-}
-
-
-/* =========================================================
-   PHONE MENU
-========================================================= */
-
-.phone-menu {
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 14px;
-
-    padding: 12px;
-}
-
-.phone-menu-title {
-
-    color: #aaa;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    letter-spacing: 2px;
-
-    padding: 5px 3px 10px;
 }
 
 
@@ -977,11 +685,13 @@ footer {
 
 .phone-song-list {
 
+    flex: 1;
+
     overflow-y: auto;
 
-    min-height: 250px;
+    min-height: 300px;
 
-    max-height: 48vh;
+    max-height: 55vh;
 }
 
 .phone-song {
@@ -1005,10 +715,6 @@ footer {
     font-size: 16px;
 }
 
-.phone-song:last-child {
-    margin-bottom: 0;
-}
-
 .phone-song:active {
 
     transform: scale(0.98);
@@ -1028,33 +734,11 @@ footer {
 .phone-song.playing {
 
     border: 2px solid #20e020;
-
-    background:
-        linear-gradient(
-            90deg,
-            #142014,
-            #151515
-        );
-}
-
-.phone-song.playing span {
-    color: #8cff8c;
 }
 
 .phone-song.reserved {
 
     border: 2px solid #e0a900;
-
-    background:
-        linear-gradient(
-            90deg,
-            #241e08,
-            #151515
-        );
-}
-
-.phone-song.reserved span {
-    color: #ffcc00;
 }
 
 
@@ -1088,10 +772,7 @@ footer {
 
     display: grid;
 
-    grid-template-columns:
-        35px
-        1fr
-        35px;
+    grid-template-columns: 35px 1fr 35px;
 
     align-items: center;
 
@@ -1102,15 +783,13 @@ footer {
     border-bottom: 1px solid #222;
 }
 
-.queue-item:last-child {
-    border-bottom: none;
-}
-
 .queue-item strong {
+
     color: #ffcc00;
 }
 
 .queue-item span {
+
     font-size: 14px;
 }
 
@@ -1138,17 +817,13 @@ footer {
     display: grid;
 
     grid-template-columns:
-        1fr 1.5fr 1fr;
+        1fr 1.3fr 1fr;
 
     gap: 10px;
 
     position: sticky;
 
     bottom: 0;
-
-    background: #080808;
-
-    padding-top: 5px;
 }
 
 .phone-controls button {
@@ -1174,7 +849,8 @@ footer {
 }
 
 .phone-controls .phone-play {
-    font-size: 14px;
+
+    font-size: 17px;
 }
 
 
@@ -1189,15 +865,21 @@ footer {
         grid-template-columns:
             minmax(0, 1.7fr)
             minmax(300px, 1fr);
+
     }
 
     .youtube-container {
+
         height: 350px;
+
     }
 
     .song-info h1 {
+
         font-size: 32px;
+
     }
+
 }
 
 
@@ -1210,19 +892,27 @@ footer {
     #hostApp main {
 
         grid-template-columns: 1fr;
+
     }
 
     #hostApp .screen {
+
         min-height: 500px;
+
     }
 
     #hostApp .remote {
+
         min-height: 500px;
+
     }
 
     #hostApp .youtube-container {
+
         height: 300px;
+
     }
+
 }
 
 
@@ -1233,52 +923,52 @@ footer {
 @media (max-width: 600px) {
 
     #hostApp header {
+
         padding: 0 18px;
+
     }
 
     #hostApp .logo {
+
         font-size: 20px;
+
     }
 
     #hostApp .connection {
+
         font-size: 12px;
+
     }
 
     #hostApp main {
+
         padding: 10px;
+
     }
 
     #hostApp .screen,
     #hostApp .remote {
+
         padding: 20px;
+
     }
 
     #hostApp .youtube-container {
+
         height: 230px;
+
     }
 
     .phone-main {
+
         padding: 10px;
+
     }
 
     .phone-song-list {
-        max-height: 45vh;
+
+        max-height: 48vh;
+
     }
 
-    .login-box {
-        padding: 32px 22px;
-    }
-
-    .login-box h1 {
-        font-size: 23px;
-    }
-
-    .header-right {
-        gap: 7px;
-    }
-
-    .header-right .logout-button {
-        font-size: 11px;
-        padding: 7px 8px;
-    }
 }
