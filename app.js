@@ -11,6 +11,10 @@
 const LOGIN_USERNAME = "admin";
 const LOGIN_PASSWORD = "Karaoke123!";
 
+const LOGIN_USERNAME = "adminjhp";
+const LOGIN_PASSWORD = "Karaoke123!";
+
+
 
 /* =========================================================
    LOGIN STATE
