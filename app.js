@@ -75,6 +75,20 @@ let isPlaying = false;
 
 
 /* =========================================================
+   YOUTUBE API STATE
+========================================================= */
+
+/*
+   IMPORTANT:
+   The YouTube API may become ready BEFORE login.
+   We remember that it is ready, then create the player
+   after the user logs in.
+*/
+
+let youtubeApiReady = false;
+
+
+/* =========================================================
    REMOTE / PEER STATE
 ========================================================= */
 
@@ -100,7 +114,7 @@ let remoteConnections = [];
 
 
 /* =========================================================
-   DOM READY
+   LOGIN
 ========================================================= */
 
 document.addEventListener(
@@ -114,7 +128,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   SHOW LOGIN / APP
+   SHOW LOGIN
 ========================================================= */
 
 function showLoginScreen() {
@@ -125,20 +139,12 @@ function showLoginScreen() {
     const app =
         document.getElementById("appContainer");
 
-
     if (!loginScreen || !app) {
         return;
     }
 
 
     if (isLoggedIn) {
-
-        /*
-         * IMPORTANT:
-         * Explicit inline display handling.
-         * This prevents GitHub Pages from showing
-         * login and app at the same time.
-         */
 
         loginScreen.style.display = "none";
 
@@ -158,37 +164,25 @@ function showLoginScreen() {
 
 
 /* =========================================================
-   LOGIN
+   LOGIN FUNCTION
 ========================================================= */
 
 function login() {
 
-    const usernameInput =
-        document.getElementById(
-            "loginUsername"
-        );
-
-    const passwordInput =
-        document.getElementById(
-            "loginPassword"
-        );
-
-    const error =
-        document.getElementById(
-            "loginError"
-        );
-
-
-    if (!usernameInput || !passwordInput) {
-        return;
-    }
-
-
     const username =
-        usernameInput.value.trim();
+        document
+            .getElementById("loginUsername")
+            .value
+            .trim();
 
     const password =
-        passwordInput.value;
+        document
+            .getElementById("loginPassword")
+            .value;
+
+
+    const error =
+        document.getElementById("loginError");
 
 
     if (
@@ -203,31 +197,26 @@ function login() {
 
         isLoggedIn = true;
 
+        error.textContent = "";
 
-        if (error) {
-            error.textContent = "";
-        }
+        document.getElementById(
+            "loginUsername"
+        ).value = "";
 
-
-        usernameInput.value = "";
-        passwordInput.value = "";
-
+        document.getElementById(
+            "loginPassword"
+        ).value = "";
 
         showLoginScreen();
 
     } else {
 
-        if (error) {
+        error.textContent =
+            "❌ Incorrect username or password.";
 
-            error.textContent =
-                "❌ Incorrect username or password.";
-
-        }
-
-
-        passwordInput.value = "";
-
-        passwordInput.focus();
+        document
+            .getElementById("loginPassword")
+            .value = "";
 
     }
 
@@ -243,8 +232,6 @@ function handleLoginKey(event) {
     if (
         event.key === "Enter"
     ) {
-
-        event.preventDefault();
 
         login();
 
@@ -263,7 +250,6 @@ function logout() {
         confirm(
             "Are you sure you want to logout?"
         );
-
 
     if (!confirmLogout) {
         return;
@@ -294,39 +280,49 @@ function logout() {
 
     hostConnection = null;
 
+
+    /*
+       Properly destroy the YouTube player
+       before logging out.
+    */
+
+    if (
+        youtubePlayer &&
+        typeof youtubePlayer.destroy === "function"
+    ) {
+
+        try {
+            youtubePlayer.destroy();
+        } catch (error) {
+            console.log(
+                "YouTube destroy error:",
+                error
+            );
+        }
+
+    }
+
+
     youtubePlayer = null;
 
+    pendingSongIndex = null;
 
-    const app =
-        document.getElementById(
-            "appContainer"
-        );
-
-    const loginScreen =
-        document.getElementById(
-            "loginScreen"
-        );
+    isPlaying = false;
 
 
-    if (app) {
-        app.style.display = "none";
-    }
+    document.getElementById(
+        "appContainer"
+    ).style.display = "none";
 
 
-    if (loginScreen) {
-        loginScreen.style.display = "flex";
-    }
+    document.getElementById(
+        "loginScreen"
+    ).style.display = "flex";
 
 
-    const username =
-        document.getElementById(
-            "loginUsername"
-        );
-
-
-    if (username) {
-        username.focus();
-    }
+    document.getElementById(
+        "loginUsername"
+    ).focus();
 
 }
 
@@ -361,30 +357,24 @@ function startKaraokeApp() {
 
 function startHost() {
 
-    const host =
-        document.getElementById(
-            "hostApp"
-        );
+    document.getElementById("hostApp").style.display =
+        "block";
 
-    const remote =
-        document.getElementById(
-            "remoteApp"
-        );
-
-
-    if (host) {
-        host.style.display = "block";
-    }
-
-
-    if (remote) {
-        remote.style.display = "none";
-    }
-
+    document.getElementById("remoteApp").style.display =
+        "none";
 
     startHostPeer();
 
     renderSongs();
+
+
+    /*
+       FIX:
+       If YouTube API is already ready because it loaded
+       before login, create the player NOW.
+    */
+
+    initializeYouTubePlayer();
 
 }
 
@@ -395,28 +385,92 @@ function startHost() {
 
 function startRemote() {
 
-    const host =
-        document.getElementById(
-            "hostApp"
-        );
+    document.getElementById("hostApp").style.display =
+        "none";
 
-    const remote =
-        document.getElementById(
-            "remoteApp"
-        );
-
-
-    if (host) {
-        host.style.display = "none";
-    }
-
-
-    if (remote) {
-        remote.style.display = "block";
-    }
-
+    document.getElementById("remoteApp").style.display =
+        "block";
 
     startRemotePeer();
+
+}
+
+
+/* =========================================================
+   INITIALIZE YOUTUBE PLAYER
+========================================================= */
+
+function initializeYouTubePlayer() {
+
+    /*
+       Remote phone does NOT need the YouTube player.
+    */
+
+    if (isRemote) {
+        return;
+    }
+
+
+    /*
+       User must be logged in.
+    */
+
+    if (!isLoggedIn) {
+        return;
+    }
+
+
+    /*
+       Do not create the player twice.
+    */
+
+    if (youtubePlayer) {
+        return;
+    }
+
+
+    /*
+       Wait until YouTube API is ready.
+    */
+
+    if (
+        !youtubeApiReady ||
+        typeof YT === "undefined" ||
+        typeof YT.Player === "undefined"
+    ) {
+
+        console.log(
+            "YouTube API not ready yet."
+        );
+
+        return;
+
+    }
+
+
+    const playerElement =
+        document.getElementById(
+            "youtubePlayer"
+        );
+
+
+    if (!playerElement) {
+
+        console.log(
+            "YouTube player element not found."
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "Creating YouTube player..."
+    );
+
+
+    createYouTubePlayer();
 
 }
 
@@ -427,18 +481,12 @@ function startRemote() {
 
 function startHostPeer() {
 
-    if (typeof Peer === "undefined") {
+    /*
+       Prevent creating multiple Peer connections
+       after repeated login/logout.
+    */
 
-        const status =
-            document.getElementById(
-                "connectionStatus"
-            );
-
-        if (status) {
-            status.textContent =
-                "🔴 PeerJS unavailable";
-        }
-
+    if (peer) {
         return;
     }
 
@@ -491,18 +539,20 @@ function startHostPeer() {
             }
 
 
-            generateQRCode(remoteUrl);
+            generateQRCode(
+                remoteUrl
+            );
 
 
-            const status =
+            const connectionStatus =
                 document.getElementById(
                     "connectionStatus"
                 );
 
 
-            if (status) {
+            if (connectionStatus) {
 
-                status.textContent =
+                connectionStatus.textContent =
                     "🟢 Room Ready";
 
             }
@@ -572,9 +622,15 @@ function startHostPeer() {
                         remoteConnections.length === 0
                     ) {
 
-                        if (phoneStatus) {
+                        const status =
+                            document.getElementById(
+                                "phoneStatus"
+                            );
 
-                            phoneStatus.textContent =
+
+                        if (status) {
+
+                            status.textContent =
                                 "📱 No phone connected";
 
                         }
@@ -623,20 +679,7 @@ function startHostPeer() {
 
 function startRemotePeer() {
 
-    if (typeof Peer === "undefined") {
-
-        const status =
-            document.getElementById(
-                "remoteConnectionStatus"
-            );
-
-        if (status) {
-
-            status.textContent =
-                "🔴 PeerJS unavailable";
-
-        }
-
+    if (peer) {
         return;
     }
 
@@ -658,18 +701,10 @@ function startRemotePeer() {
                 "open",
                 function () {
 
-                    const status =
-                        document.getElementById(
-                            "remoteConnectionStatus"
-                        );
-
-
-                    if (status) {
-
-                        status.textContent =
-                            "🟢 Connected";
-
-                    }
+                    document.getElementById(
+                        "remoteConnectionStatus"
+                    ).textContent =
+                        "🟢 Connected";
 
                 }
             );
@@ -691,18 +726,10 @@ function startRemotePeer() {
                 "close",
                 function () {
 
-                    const status =
-                        document.getElementById(
-                            "remoteConnectionStatus"
-                        );
-
-
-                    if (status) {
-
-                        status.textContent =
-                            "🔴 Disconnected";
-
-                    }
+                    document.getElementById(
+                        "remoteConnectionStatus"
+                    ).textContent =
+                        "🔴 Disconnected";
 
                 }
             );
@@ -712,18 +739,10 @@ function startRemotePeer() {
                 "error",
                 function () {
 
-                    const status =
-                        document.getElementById(
-                            "remoteConnectionStatus"
-                        );
-
-
-                    if (status) {
-
-                        status.textContent =
-                            "🔴 Connection Error";
-
-                    }
+                    document.getElementById(
+                        "remoteConnectionStatus"
+                    ).textContent =
+                        "🔴 Connection Error";
 
                 }
             );
@@ -742,18 +761,10 @@ function startRemotePeer() {
             );
 
 
-            const status =
-                document.getElementById(
-                    "remoteConnectionStatus"
-                );
-
-
-            if (status) {
-
-                status.textContent =
-                    "🔴 Connection Failed";
-
-            }
+            document.getElementById(
+                "remoteConnectionStatus"
+            ).textContent =
+                "🔴 Connection Failed";
 
         }
     );
@@ -762,7 +773,7 @@ function startRemotePeer() {
 
 
 /* =========================================================
-   QR CODE
+   GENERATE QR
 ========================================================= */
 
 function generateQRCode(url) {
@@ -805,19 +816,10 @@ function generateQRCode(url) {
 
 function copyRemoteLink() {
 
-    const element =
+    const link =
         document.getElementById(
             "remoteLink"
-        );
-
-
-    if (!element) {
-        return;
-    }
-
-
-    const link =
-        element.textContent;
+        ).textContent;
 
 
     if (
@@ -830,96 +832,23 @@ function copyRemoteLink() {
     }
 
 
-    if (
-        navigator.clipboard &&
-        window.isSecureContext
-    ) {
+    navigator.clipboard
+        .writeText(link)
+        .then(
+            function () {
 
-        navigator.clipboard
-            .writeText(link)
-            .then(
-                function () {
+                alert(
+                    "📱 Remote link copied!"
+                );
 
-                    alert(
-                        "📱 Remote link copied!"
-                    );
-
-                }
-            )
-            .catch(
-                function () {
-
-                    fallbackCopy(link);
-
-                }
-            );
-
-    } else {
-
-        fallbackCopy(link);
-
-    }
+            }
+        );
 
 }
 
 
 /* =========================================================
-   FALLBACK COPY
-========================================================= */
-
-function fallbackCopy(text) {
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-
-    textarea.value = text;
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.left =
-        "-9999px";
-
-
-    document.body.appendChild(
-        textarea
-    );
-
-
-    textarea.select();
-
-
-    try {
-
-        document.execCommand(
-            "copy"
-        );
-
-        alert(
-            "📱 Remote link copied!"
-        );
-
-    } catch (error) {
-
-        alert(
-            "Please copy the remote link manually."
-        );
-
-    }
-
-
-    document.body.removeChild(
-        textarea
-    );
-
-}
-
-
-/* =========================================================
-   SEND STATE
+   SEND STATE TO ONE REMOTE
 ========================================================= */
 
 function sendState(connection) {
@@ -966,7 +895,9 @@ function broadcastState() {
     remoteConnections.forEach(
         function (connection) {
 
-            sendState(connection);
+            sendState(
+                connection
+            );
 
         }
     );
@@ -1074,28 +1005,16 @@ function handleHostState(data) {
     }
 
 
-    const title =
-        document.getElementById(
-            "remoteSongTitle"
-        );
+    document.getElementById(
+        "remoteSongTitle"
+    ).textContent =
+        song.title;
 
 
-    const artist =
-        document.getElementById(
-            "remoteArtist"
-        );
-
-
-    if (title) {
-        title.textContent =
-            song.title;
-    }
-
-
-    if (artist) {
-        artist.textContent =
-            song.artist;
-    }
+    document.getElementById(
+        "remoteArtist"
+    ).textContent =
+        song.artist;
 
 
     renderRemoteSongs();
@@ -1205,44 +1124,32 @@ function loadSong(index) {
     }
 
 
-    currentSong =
-        index;
+    currentSong = index;
 
 
     const song =
         songs[currentSong];
 
 
-    const title =
-        document.getElementById(
-            "songTitle"
-        );
+    document.getElementById(
+        "songTitle"
+    ).textContent =
+        song.title;
 
 
-    const artist =
-        document.getElementById(
-            "artist"
-        );
-
-
-    if (title) {
-
-        title.textContent =
-            song.title;
-
-    }
-
-
-    if (artist) {
-
-        artist.textContent =
-            song.artist;
-
-    }
+    document.getElementById(
+        "artist"
+    ).textContent =
+        song.artist;
 
 
     renderSongs();
 
+
+    /*
+       If player is not ready yet,
+       remember the requested song.
+    */
 
     if (!youtubePlayer) {
 
@@ -1269,10 +1176,15 @@ function loadSong(index) {
 
 
 /* =========================================================
-   YOUTUBE READY
+   YOUTUBE PLAYER READY
 ========================================================= */
 
 function onYouTubePlayerReady(event) {
+
+    console.log(
+        "YouTube player is ready."
+    );
+
 
     if (
         pendingSongIndex !== null
@@ -1293,6 +1205,7 @@ function onYouTubePlayerReady(event) {
         event.target.loadVideoById(
             song.youtube
         );
+
 
     } else {
 
@@ -1381,9 +1294,19 @@ function onYouTubePlayerStateChange(event) {
 
 function createYouTubePlayer() {
 
+    if (youtubePlayer) {
+        return;
+    }
+
+
     if (
-        typeof YT === "undefined"
+        typeof YT === "undefined" ||
+        typeof YT.Player === "undefined"
     ) {
+
+        console.log(
+            "Cannot create YouTube player yet."
+        );
 
         return;
 
@@ -1397,7 +1320,13 @@ function createYouTubePlayer() {
 
 
     if (!playerElement) {
+
+        console.log(
+            "youtubePlayer element missing."
+        );
+
         return;
+
     }
 
 
@@ -1490,7 +1419,13 @@ function previousSong() {
 function togglePlay() {
 
     if (!youtubePlayer) {
+
+        console.log(
+            "YouTube player is not ready."
+        );
+
         return;
+
     }
 
 
@@ -1513,6 +1448,7 @@ function togglePlay() {
     ) {
 
         youtubePlayer.pauseVideo();
+
 
     } else {
 
@@ -1585,21 +1521,13 @@ function removeReserve(index) {
 
 function searchSongs() {
 
-    const input =
-        document.getElementById(
-            "search"
-        );
-
-
-    if (!input) {
-        return;
-    }
-
-
     const search =
-        input.value
-            .toLowerCase()
-            .trim();
+        document
+            .getElementById(
+                "search"
+            )
+            .value
+            .toLowerCase();
 
 
     renderSongs(
@@ -1659,10 +1587,6 @@ function renderSongs(
                 );
 
 
-            button.type =
-                "button";
-
-
             button.className =
                 "song";
 
@@ -1697,6 +1621,7 @@ function renderSongs(
                         );
 
                     };
+
 
             }
 
@@ -1739,6 +1664,7 @@ function renderSongs(
                         );
 
                     };
+
 
             }
 
@@ -1786,21 +1712,13 @@ function renderSongs(
 
 function searchRemoteSongs() {
 
-    const input =
-        document.getElementById(
-            "remoteSearch"
-        );
-
-
-    if (!input) {
-        return;
-    }
-
-
     const search =
-        input.value
-            .toLowerCase()
-            .trim();
+        document
+            .getElementById(
+                "remoteSearch"
+            )
+            .value
+            .toLowerCase();
 
 
     renderRemoteSongs(
@@ -1860,10 +1778,6 @@ function renderRemoteSongs(
                 );
 
 
-            button.type =
-                "button";
-
-
             button.className =
                 "phone-song";
 
@@ -1886,6 +1800,7 @@ function renderRemoteSongs(
                     </span>
 
                 `;
+
 
             }
 
@@ -2004,11 +1919,6 @@ function renderRemoteQueue() {
                 songs[index];
 
 
-            if (!song) {
-                return;
-            }
-
-
             const item =
                 document.createElement(
                     "div"
@@ -2030,11 +1940,8 @@ function renderRemoteQueue() {
                 </span>
 
                 <button
-                    type="button"
                     onclick="remoteRemoveReserve(${index})">
-
                     ✕
-
                 </button>
 
             `;
@@ -2054,16 +1961,31 @@ function renderRemoteQueue() {
    YOUTUBE CALLBACK
 ========================================================= */
 
+/*
+   IMPORTANT FIX:
+
+   The API can become ready before login.
+
+   We set youtubeApiReady = true,
+   then call initializeYouTubePlayer().
+
+   If the user is still on the login screen,
+   initializeYouTubePlayer() simply waits.
+
+   After login, startHost() calls it again.
+*/
+
 window.onYouTubeIframeAPIReady =
     function () {
 
-        if (
-            !isRemote &&
-            isLoggedIn
-        ) {
+        console.log(
+            "YouTube IFrame API is ready."
+        );
 
-            createYouTubePlayer();
 
-        }
+        youtubeApiReady = true;
+
+
+        initializeYouTubePlayer();
 
     };
